@@ -1,0 +1,78 @@
+{
+  "manifest": {
+    "contract_name": "signguy-slim-portable",
+    "contract_version": "1.0.0",
+    "source_app": "SIGNGUY-SLIM",
+    "source_app_version": "0.1.0-v1-part1",
+    "source_commit": "0000000000000000000000000000000000000000",
+    "source_instance_id": "slim-local-empty",
+    "source_tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000010",
+    "export_package_id": "sgp_v1_export_00000000-0000-4000-8000-000000000001",
+    "package_id": "sgp_v1_package_00000000-0000-4000-8000-000000000001",
+    "exported_at_utc": "2026-08-20T00:00:00Z",
+    "locale": "en-US",
+    "currency": "USD",
+    "shop_timezone": "America/New_York",
+    "schema_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "overall_integrity": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "minimum_compatible_slim_restore_version": "0.1.0",
+    "minimum_compatible_mvp_importer_version": "0.1.0",
+    "entity_counts": {
+      "tenants": 1,
+      "users": 0,
+      "customers": 0,
+      "estimates": 0,
+      "estimate_items": 0,
+      "orders": 0,
+      "order_items": 0,
+      "work_orders": 0,
+      "invoices": 0,
+      "calendar_events": 0,
+      "reminders": 0,
+      "notes": 0,
+      "attachments": 0,
+      "audit_events": 0
+    },
+    "capability_flags": {
+      "version_1": true,
+      "attachments": true,
+      "mvp_upgrade_import": true,
+      "version_2_entities": false
+    },
+    "attachment_count": 0,
+    "attachment_bytes": 0,
+    "file_inventory": [],
+    "protection": {
+      "protected": false,
+      "algorithm": "none",
+      "kdf": "none",
+      "salt_id": null,
+      "secret_material_included": false
+    },
+    "contains_secrets": false
+  },
+  "tenants": [
+    {
+      "portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000010",
+      "name": "Golden Empty Tenant",
+      "timezone": "America/New_York",
+      "locale": "en-US",
+      "currency": "USD",
+      "sales_tax_rate_basis_points": 0
+    }
+  ],
+  "users": [],
+  "customers": [],
+  "estimates": [],
+  "estimate_items": [],
+  "orders": [],
+  "order_items": [],
+  "work_orders": [],
+  "invoices": [],
+  "calendar_events": [],
+  "reminders": [],
+  "notes": [],
+  "attachments": [],
+  "audit_events": []
+}

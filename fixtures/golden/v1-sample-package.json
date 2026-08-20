@@ -1,0 +1,309 @@
+{
+  "manifest": {
+    "contract_name": "signguy-slim-portable",
+    "contract_version": "1.0.0",
+    "source_app": "SIGNGUY-SLIM",
+    "source_app_version": "0.1.0-v1-part1",
+    "source_commit": "1111111111111111111111111111111111111111",
+    "source_instance_id": "slim-local-sample",
+    "source_tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+    "export_package_id": "sgp_v1_export_00000000-0000-4000-8000-000000000101",
+    "package_id": "sgp_v1_package_00000000-0000-4000-8000-000000000101",
+    "exported_at_utc": "2026-08-20T14:30:00Z",
+    "locale": "en-US",
+    "currency": "USD",
+    "shop_timezone": "America/New_York",
+    "schema_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "content_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "overall_integrity": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+    "minimum_compatible_slim_restore_version": "0.1.0",
+    "minimum_compatible_mvp_importer_version": "0.1.0",
+    "entity_counts": {
+      "tenants": 1,
+      "users": 1,
+      "customers": 1,
+      "estimates": 1,
+      "estimate_items": 1,
+      "orders": 1,
+      "order_items": 1,
+      "work_orders": 1,
+      "invoices": 1,
+      "calendar_events": 1,
+      "reminders": 1,
+      "notes": 1,
+      "attachments": 1,
+      "audit_events": 1
+    },
+    "capability_flags": {
+      "version_1": true,
+      "attachments": true,
+      "mvp_upgrade_import": true,
+      "version_2_entities": false
+    },
+    "attachment_count": 1,
+    "attachment_bytes": 12,
+    "file_inventory": [
+      {
+        "path": "attachments/order-summary.txt",
+        "media_type": "text/plain",
+        "size_bytes": 12,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ],
+    "protection": {
+      "protected": false,
+      "algorithm": "none",
+      "kdf": "none",
+      "salt_id": null,
+      "secret_material_included": false
+    },
+    "contains_secrets": false
+  },
+  "tenants": [
+    {
+      "portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "name": "Golden Sample Tenant",
+      "timezone": "America/New_York",
+      "locale": "en-US",
+      "currency": "USD",
+      "sales_tax_rate_basis_points": 700
+    }
+  ],
+  "users": [
+    {
+      "portable_id": "sgp_v1_user_00000000-0000-4000-8000-000000000110",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "display_name": "Shop Owner",
+      "email_label": "owner@example.com",
+      "role_label": "owner",
+      "active": true
+    }
+  ],
+  "customers": [
+    {
+      "portable_id": "sgp_v1_customer_00000000-0000-4000-8000-000000000120",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "contact_name": "Dana Customer",
+      "business_name": "Dana Signs",
+      "email": "dana@example.com",
+      "phone": "555-0100",
+      "billing_address": {
+        "line1": "100 Main St",
+        "line2": null,
+        "city": "Raleigh",
+        "state": "NC",
+        "postal_code": "27601",
+        "country": "US"
+      },
+      "tax_exempt": false,
+      "tax_exemption_note": null,
+      "active": true,
+      "internal_notes": "Prefers morning pickup."
+    }
+  ],
+  "estimates": [
+    {
+      "portable_id": "sgp_v1_estimate_00000000-0000-4000-8000-000000000130",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "customer_portable_id": "sgp_v1_customer_00000000-0000-4000-8000-000000000120",
+      "estimate_number": "E-1001",
+      "document_date": "2026-08-20",
+      "status": "accepted",
+      "expires_at": "2026-09-19",
+      "follow_up_at": "2026-08-27",
+      "converted_order_portable_id": "sgp_v1_order_00000000-0000-4000-8000-000000000150",
+      "customer_tax_exempt_snapshot": false,
+      "tax_rate_basis_points_snapshot": 700,
+      "subtotal_cents": 20000,
+      "discount_cents": 0,
+      "tax_cents": 1400,
+      "total_cents": 21400,
+      "internal_notes": "Approved by phone."
+    }
+  ],
+  "estimate_items": [
+    {
+      "portable_id": "sgp_v1_estimate_item_00000000-0000-4000-8000-000000000140",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "estimate_portable_id": "sgp_v1_estimate_00000000-0000-4000-8000-000000000130",
+      "position": 0,
+      "description": "Window lettering",
+      "quantity_decimal": "2",
+      "unit_price_cents": 10000,
+      "line_total_cents": 20000,
+      "taxable": true,
+      "production_required": true,
+      "due_date": "2026-08-28",
+      "assigned_user_portable_id": "sgp_v1_user_00000000-0000-4000-8000-000000000110",
+      "internal_note": "Use white vinyl."
+    }
+  ],
+  "orders": [
+    {
+      "portable_id": "sgp_v1_order_00000000-0000-4000-8000-000000000150",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "customer_portable_id": "sgp_v1_customer_00000000-0000-4000-8000-000000000120",
+      "source_estimate_portable_id": "sgp_v1_estimate_00000000-0000-4000-8000-000000000130",
+      "order_number": "O-1001",
+      "document_date": "2026-08-20",
+      "status": "active",
+      "due_date": "2026-08-28",
+      "customer_tax_exempt_snapshot": false,
+      "tax_rate_basis_points_snapshot": 700,
+      "subtotal_cents": 20000,
+      "discount_cents": 0,
+      "tax_cents": 1400,
+      "total_cents": 21400,
+      "internal_notes": "Converted from estimate."
+    }
+  ],
+  "order_items": [
+    {
+      "portable_id": "sgp_v1_order_item_00000000-0000-4000-8000-000000000160",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "order_portable_id": "sgp_v1_order_00000000-0000-4000-8000-000000000150",
+      "source_estimate_item_portable_id": "sgp_v1_estimate_item_00000000-0000-4000-8000-000000000140",
+      "position": 0,
+      "description": "Window lettering",
+      "quantity_decimal": "2",
+      "unit_price_cents": 10000,
+      "line_total_cents": 20000,
+      "taxable": true,
+      "production_required": true,
+      "production_stage": "in_progress",
+      "assigned_user_portable_id": "sgp_v1_user_00000000-0000-4000-8000-000000000110",
+      "scheduled_start_at": "2026-08-25T13:00:00Z",
+      "due_date": "2026-08-28",
+      "completed": false,
+      "completed_at": null,
+      "reopened_at": null,
+      "internal_note": "Weed before install."
+    }
+  ],
+  "work_orders": [
+    {
+      "portable_id": "sgp_v1_work_order_00000000-0000-4000-8000-000000000170",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "order_portable_id": "sgp_v1_order_00000000-0000-4000-8000-000000000150",
+      "customer_portable_id": "sgp_v1_customer_00000000-0000-4000-8000-000000000120",
+      "work_order_number": "W-1001",
+      "production_status": "in_progress",
+      "completion_state": "open",
+      "priority": "normal",
+      "due_date": "2026-08-28",
+      "released_at": "2026-08-20T15:00:00Z",
+      "started_at": "2026-08-25T13:00:00Z",
+      "ready_at": null,
+      "completed_at": null,
+      "reopened_at": null,
+      "cancelled_at": null,
+      "assigned_user_portable_ids": ["sgp_v1_user_00000000-0000-4000-8000-000000000110"],
+      "current_version": true,
+      "superseded_by_work_order_portable_id": null,
+      "production_instructions": "Cut and weed vinyl.",
+      "internal_notes": "Check window size before install.",
+      "items_snapshot": [
+        {
+          "order_item_portable_id": "sgp_v1_order_item_00000000-0000-4000-8000-000000000160",
+          "description": "Window lettering",
+          "quantity_decimal": "2",
+          "unit_price_cents": 10000,
+          "line_total_cents": 20000,
+          "production_required": true,
+          "notes": "Use white vinyl."
+        }
+      ]
+    }
+  ],
+  "invoices": [
+    {
+      "portable_id": "sgp_v1_invoice_00000000-0000-4000-8000-000000000180",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "order_portable_id": "sgp_v1_order_00000000-0000-4000-8000-000000000150",
+      "customer_portable_id": "sgp_v1_customer_00000000-0000-4000-8000-000000000120",
+      "invoice_number": "I-1001",
+      "document_date": "2026-08-20",
+      "document_status": "issued",
+      "payment_status": "partial",
+      "due_date": "2026-09-19",
+      "customer_tax_exempt_snapshot": false,
+      "tax_rate_basis_points_snapshot": 700,
+      "subtotal_cents": 20000,
+      "discount_cents": 0,
+      "tax_cents": 1400,
+      "total_cents": 21400,
+      "amount_paid_cents": 5000,
+      "balance_due_cents": 16400,
+      "historical_amount_paid_note": "External cash payment recorded manually."
+    }
+  ],
+  "calendar_events": [
+    {
+      "portable_id": "sgp_v1_calendar_event_00000000-0000-4000-8000-000000000190",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "order_portable_id": "sgp_v1_order_00000000-0000-4000-8000-000000000150",
+      "order_item_portable_id": "sgp_v1_order_item_00000000-0000-4000-8000-000000000160",
+      "title": "Window lettering install",
+      "status": "scheduled",
+      "start_at": "2026-08-25T13:00:00Z",
+      "end_at": "2026-08-25T15:00:00Z",
+      "all_day": false,
+      "assigned_user_portable_id": "sgp_v1_user_00000000-0000-4000-8000-000000000110",
+      "note": "Bring ladder.",
+      "completion_affects_production": false
+    }
+  ],
+  "reminders": [
+    {
+      "portable_id": "sgp_v1_reminder_00000000-0000-4000-8000-000000000200",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "source_type": "invoice",
+      "source_portable_id": "sgp_v1_invoice_00000000-0000-4000-8000-000000000180",
+      "kind": "due_soon",
+      "status": "open",
+      "due_at": "2026-09-16T13:00:00Z"
+    }
+  ],
+  "notes": [
+    {
+      "portable_id": "sgp_v1_note_00000000-0000-4000-8000-000000000210",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "source_type": "order",
+      "source_portable_id": "sgp_v1_order_00000000-0000-4000-8000-000000000150",
+      "body": "Customer asked for install before noon if possible.",
+      "author_user_portable_id": "sgp_v1_user_00000000-0000-4000-8000-000000000110",
+      "created_at": "2026-08-20T15:15:00Z",
+      "internal": true
+    }
+  ],
+  "attachments": [
+    {
+      "portable_id": "sgp_v1_attachment_00000000-0000-4000-8000-000000000220",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "source_type": "order",
+      "source_portable_id": "sgp_v1_order_00000000-0000-4000-8000-000000000150",
+      "file_name": "order-summary.txt",
+      "media_type": "text/plain",
+      "size_bytes": 12,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "file_inventory_path": "attachments/order-summary.txt",
+      "created_at": "2026-08-20T15:20:00Z"
+    }
+  ],
+  "audit_events": [
+    {
+      "portable_id": "sgp_v1_audit_event_00000000-0000-4000-8000-000000000230",
+      "tenant_portable_id": "sgp_v1_tenant_00000000-0000-4000-8000-000000000100",
+      "actor_user_portable_id": "sgp_v1_user_00000000-0000-4000-8000-000000000110",
+      "action": "work_order.in_progress",
+      "entity_type": "work_order",
+      "entity_portable_id": "sgp_v1_work_order_00000000-0000-4000-8000-000000000170",
+      "occurred_at": "2026-08-25T13:00:00Z",
+      "summary": "Work Order W-1001 moved to in progress.",
+      "diff": {
+        "from": "released",
+        "to": "in_progress"
+      }
+    }
+  ]
+}

@@ -1,0 +1,416 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://signguy.ai/portable/signguy-slim-portable-v1.schema.json",
+  "title": "SignGuy Slim Portable Package Version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest", "tenants", "users", "customers", "estimates", "estimate_items", "orders", "order_items", "work_orders", "invoices", "calendar_events", "reminders", "notes", "attachments", "audit_events"],
+  "properties": {
+    "manifest": { "$ref": "#/$defs/manifest" },
+    "tenants": { "type": "array", "items": { "$ref": "#/$defs/tenant" }, "minItems": 1 },
+    "users": { "type": "array", "items": { "$ref": "#/$defs/user_ref" } },
+    "customers": { "type": "array", "items": { "$ref": "#/$defs/customer" } },
+    "estimates": { "type": "array", "items": { "$ref": "#/$defs/estimate" } },
+    "estimate_items": { "type": "array", "items": { "$ref": "#/$defs/estimate_item" } },
+    "orders": { "type": "array", "items": { "$ref": "#/$defs/order" } },
+    "order_items": { "type": "array", "items": { "$ref": "#/$defs/order_item" } },
+    "work_orders": { "type": "array", "items": { "$ref": "#/$defs/work_order" } },
+    "invoices": { "type": "array", "items": { "$ref": "#/$defs/invoice" } },
+    "calendar_events": { "type": "array", "items": { "$ref": "#/$defs/calendar_event" } },
+    "reminders": { "type": "array", "items": { "$ref": "#/$defs/reminder" } },
+    "notes": { "type": "array", "items": { "$ref": "#/$defs/note" } },
+    "attachments": { "type": "array", "items": { "$ref": "#/$defs/attachment" } },
+    "audit_events": { "type": "array", "items": { "$ref": "#/$defs/audit_event" } }
+  },
+  "$defs": {
+    "portable_id": { "type": "string", "pattern": "^sgp_v1_[a-z][a-z0-9_]*_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" },
+    "date": { "type": "string", "format": "date" },
+    "date_time": { "type": "string", "format": "date-time" },
+    "nullable_date": { "anyOf": [{ "$ref": "#/$defs/date" }, { "type": "null" }] },
+    "nullable_date_time": { "anyOf": [{ "$ref": "#/$defs/date_time" }, { "type": "null" }] },
+    "money_cents": { "type": "integer", "minimum": 0 },
+    "signed_money_cents": { "type": "integer" },
+    "quantity_decimal": { "type": "string", "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,4})?$" },
+    "address": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["line1", "city", "state", "postal_code", "country"],
+      "properties": {
+        "line1": { "type": "string", "minLength": 1 },
+        "line2": { "type": ["string", "null"] },
+        "city": { "type": "string", "minLength": 1 },
+        "state": { "type": "string", "minLength": 1 },
+        "postal_code": { "type": "string", "minLength": 1 },
+        "country": { "type": "string", "minLength": 2 }
+      }
+    },
+    "file_inventory_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "media_type", "size_bytes", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "media_type": { "type": "string", "minLength": 1 },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "entity_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenants", "users", "customers", "estimates", "estimate_items", "orders", "order_items", "work_orders", "invoices", "calendar_events", "reminders", "notes", "attachments", "audit_events"],
+      "properties": {
+        "tenants": { "type": "integer", "minimum": 0 },
+        "users": { "type": "integer", "minimum": 0 },
+        "customers": { "type": "integer", "minimum": 0 },
+        "estimates": { "type": "integer", "minimum": 0 },
+        "estimate_items": { "type": "integer", "minimum": 0 },
+        "orders": { "type": "integer", "minimum": 0 },
+        "order_items": { "type": "integer", "minimum": 0 },
+        "work_orders": { "type": "integer", "minimum": 0 },
+        "invoices": { "type": "integer", "minimum": 0 },
+        "calendar_events": { "type": "integer", "minimum": 0 },
+        "reminders": { "type": "integer", "minimum": 0 },
+        "notes": { "type": "integer", "minimum": 0 },
+        "attachments": { "type": "integer", "minimum": 0 },
+        "audit_events": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract_name", "contract_version", "source_app", "source_app_version", "source_commit", "source_instance_id", "source_tenant_portable_id", "export_package_id", "package_id", "exported_at_utc", "locale", "currency", "shop_timezone", "schema_sha256", "content_sha256", "overall_integrity", "minimum_compatible_slim_restore_version", "minimum_compatible_mvp_importer_version", "entity_counts", "capability_flags", "attachment_count", "attachment_bytes", "file_inventory", "protection", "contains_secrets"],
+      "properties": {
+        "contract_name": { "const": "signguy-slim-portable" },
+        "contract_version": { "const": "1.0.0" },
+        "source_app": { "const": "SIGNGUY-SLIM" },
+        "source_app_version": { "type": "string", "minLength": 1 },
+        "source_commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "source_instance_id": { "type": "string", "minLength": 1 },
+        "source_tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "export_package_id": { "$ref": "#/$defs/portable_id" },
+        "package_id": { "$ref": "#/$defs/portable_id" },
+        "exported_at_utc": { "$ref": "#/$defs/date_time" },
+        "locale": { "type": "string", "minLength": 2 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "shop_timezone": { "type": "string", "minLength": 1 },
+        "schema_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "overall_integrity": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "minimum_compatible_slim_restore_version": { "type": "string", "minLength": 1 },
+        "minimum_compatible_mvp_importer_version": { "type": "string", "minLength": 1 },
+        "entity_counts": { "$ref": "#/$defs/entity_counts" },
+        "capability_flags": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["version_1", "attachments", "mvp_upgrade_import", "version_2_entities"],
+          "properties": {
+            "version_1": { "const": true },
+            "attachments": { "type": "boolean" },
+            "mvp_upgrade_import": { "type": "boolean" },
+            "version_2_entities": { "const": false }
+          }
+        },
+        "attachment_count": { "type": "integer", "minimum": 0 },
+        "attachment_bytes": { "type": "integer", "minimum": 0 },
+        "file_inventory": { "type": "array", "items": { "$ref": "#/$defs/file_inventory_item" } },
+        "protection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["protected", "algorithm", "kdf", "salt_id", "secret_material_included"],
+          "properties": {
+            "protected": { "type": "boolean" },
+            "algorithm": { "type": "string", "minLength": 1 },
+            "kdf": { "type": "string", "minLength": 1 },
+            "salt_id": { "type": ["string", "null"] },
+            "secret_material_included": { "const": false }
+          }
+        },
+        "contains_secrets": { "const": false }
+      }
+    },
+    "tenant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "name", "timezone", "locale", "currency", "sales_tax_rate_basis_points"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "name": { "type": "string", "minLength": 1 },
+        "timezone": { "type": "string", "minLength": 1 },
+        "locale": { "type": "string", "minLength": 2 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "sales_tax_rate_basis_points": { "type": "integer", "minimum": 0, "maximum": 10000 }
+      }
+    },
+    "user_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "display_name", "active"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "display_name": { "type": "string", "minLength": 1 },
+        "email_label": { "type": ["string", "null"], "format": "email" },
+        "role_label": { "type": ["string", "null"] },
+        "active": { "type": "boolean" }
+      }
+    },
+    "customer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "contact_name", "active", "tax_exempt"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "contact_name": { "type": "string", "minLength": 1 },
+        "business_name": { "type": ["string", "null"] },
+        "email": { "type": ["string", "null"], "format": "email" },
+        "phone": { "type": ["string", "null"] },
+        "billing_address": { "anyOf": [{ "$ref": "#/$defs/address" }, { "type": "null" }] },
+        "tax_exempt": { "type": "boolean" },
+        "tax_exemption_note": { "type": ["string", "null"] },
+        "active": { "type": "boolean" },
+        "internal_notes": { "type": ["string", "null"] }
+      }
+    },
+    "estimate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "customer_portable_id", "estimate_number", "document_date", "status", "customer_tax_exempt_snapshot", "tax_rate_basis_points_snapshot", "subtotal_cents", "discount_cents", "tax_cents", "total_cents"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "customer_portable_id": { "$ref": "#/$defs/portable_id" },
+        "estimate_number": { "type": "string", "minLength": 1 },
+        "document_date": { "$ref": "#/$defs/date" },
+        "status": { "enum": ["draft", "sent", "accepted", "declined", "expired"] },
+        "expires_at": { "$ref": "#/$defs/nullable_date" },
+        "follow_up_at": { "$ref": "#/$defs/nullable_date" },
+        "converted_order_portable_id": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "customer_tax_exempt_snapshot": { "type": "boolean" },
+        "tax_rate_basis_points_snapshot": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "subtotal_cents": { "$ref": "#/$defs/money_cents" },
+        "discount_cents": { "$ref": "#/$defs/money_cents" },
+        "tax_cents": { "$ref": "#/$defs/money_cents" },
+        "total_cents": { "$ref": "#/$defs/money_cents" },
+        "internal_notes": { "type": ["string", "null"] }
+      }
+    },
+    "estimate_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "estimate_portable_id", "position", "description", "quantity_decimal", "unit_price_cents", "line_total_cents", "taxable", "production_required"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "estimate_portable_id": { "$ref": "#/$defs/portable_id" },
+        "position": { "type": "integer", "minimum": 0 },
+        "description": { "type": "string", "minLength": 1 },
+        "quantity_decimal": { "$ref": "#/$defs/quantity_decimal" },
+        "unit_price_cents": { "$ref": "#/$defs/money_cents" },
+        "line_total_cents": { "$ref": "#/$defs/money_cents" },
+        "taxable": { "type": "boolean" },
+        "production_required": { "type": "boolean" },
+        "due_date": { "$ref": "#/$defs/nullable_date" },
+        "assigned_user_portable_id": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "internal_note": { "type": ["string", "null"] }
+      }
+    },
+    "order": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "customer_portable_id", "order_number", "document_date", "status", "customer_tax_exempt_snapshot", "tax_rate_basis_points_snapshot", "subtotal_cents", "discount_cents", "tax_cents", "total_cents"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "customer_portable_id": { "$ref": "#/$defs/portable_id" },
+        "source_estimate_portable_id": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "order_number": { "type": "string", "minLength": 1 },
+        "document_date": { "$ref": "#/$defs/date" },
+        "status": { "enum": ["draft", "active", "on_hold", "complete", "cancelled"] },
+        "due_date": { "$ref": "#/$defs/nullable_date" },
+        "customer_tax_exempt_snapshot": { "type": "boolean" },
+        "tax_rate_basis_points_snapshot": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "subtotal_cents": { "$ref": "#/$defs/money_cents" },
+        "discount_cents": { "$ref": "#/$defs/money_cents" },
+        "tax_cents": { "$ref": "#/$defs/money_cents" },
+        "total_cents": { "$ref": "#/$defs/money_cents" },
+        "internal_notes": { "type": ["string", "null"] }
+      }
+    },
+    "order_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "order_portable_id", "position", "description", "quantity_decimal", "unit_price_cents", "line_total_cents", "taxable", "production_required", "production_stage", "completed"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "order_portable_id": { "$ref": "#/$defs/portable_id" },
+        "source_estimate_item_portable_id": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "position": { "type": "integer", "minimum": 0 },
+        "description": { "type": "string", "minLength": 1 },
+        "quantity_decimal": { "$ref": "#/$defs/quantity_decimal" },
+        "unit_price_cents": { "$ref": "#/$defs/money_cents" },
+        "line_total_cents": { "$ref": "#/$defs/money_cents" },
+        "taxable": { "type": "boolean" },
+        "production_required": { "type": "boolean" },
+        "production_stage": { "enum": ["not_started", "ready", "in_progress", "waiting", "complete"] },
+        "assigned_user_portable_id": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "scheduled_start_at": { "$ref": "#/$defs/nullable_date_time" },
+        "due_date": { "$ref": "#/$defs/nullable_date" },
+        "completed": { "type": "boolean" },
+        "completed_at": { "$ref": "#/$defs/nullable_date_time" },
+        "reopened_at": { "$ref": "#/$defs/nullable_date_time" },
+        "internal_note": { "type": ["string", "null"] }
+      }
+    },
+    "work_order_item_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["order_item_portable_id", "description", "quantity_decimal", "unit_price_cents", "line_total_cents", "production_required"],
+      "properties": {
+        "order_item_portable_id": { "$ref": "#/$defs/portable_id" },
+        "description": { "type": "string", "minLength": 1 },
+        "quantity_decimal": { "$ref": "#/$defs/quantity_decimal" },
+        "unit_price_cents": { "$ref": "#/$defs/money_cents" },
+        "line_total_cents": { "$ref": "#/$defs/money_cents" },
+        "production_required": { "const": true },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "work_order": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "order_portable_id", "customer_portable_id", "work_order_number", "production_status", "completion_state", "assigned_user_portable_ids", "items_snapshot", "current_version"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "order_portable_id": { "$ref": "#/$defs/portable_id" },
+        "customer_portable_id": { "$ref": "#/$defs/portable_id" },
+        "work_order_number": { "type": "string", "minLength": 1 },
+        "production_status": { "enum": ["draft", "released", "queued", "in_progress", "blocked", "ready", "completed", "cancelled", "superseded", "not_started", "waiting"] },
+        "completion_state": { "enum": ["open", "completed", "reopened", "cancelled", "superseded"] },
+        "priority": { "enum": ["low", "normal", "high", "rush"] },
+        "due_date": { "$ref": "#/$defs/nullable_date" },
+        "released_at": { "$ref": "#/$defs/nullable_date_time" },
+        "started_at": { "$ref": "#/$defs/nullable_date_time" },
+        "ready_at": { "$ref": "#/$defs/nullable_date_time" },
+        "completed_at": { "$ref": "#/$defs/nullable_date_time" },
+        "reopened_at": { "$ref": "#/$defs/nullable_date_time" },
+        "cancelled_at": { "$ref": "#/$defs/nullable_date_time" },
+        "assigned_user_portable_ids": { "type": "array", "items": { "$ref": "#/$defs/portable_id" }, "uniqueItems": true },
+        "current_version": { "type": "boolean" },
+        "superseded_by_work_order_portable_id": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "production_instructions": { "type": ["string", "null"] },
+        "internal_notes": { "type": ["string", "null"] },
+        "items_snapshot": { "type": "array", "items": { "$ref": "#/$defs/work_order_item_snapshot" }, "minItems": 1 }
+      }
+    },
+    "invoice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "order_portable_id", "customer_portable_id", "invoice_number", "document_date", "document_status", "payment_status", "customer_tax_exempt_snapshot", "tax_rate_basis_points_snapshot", "subtotal_cents", "discount_cents", "tax_cents", "total_cents", "amount_paid_cents", "balance_due_cents"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "order_portable_id": { "$ref": "#/$defs/portable_id" },
+        "customer_portable_id": { "$ref": "#/$defs/portable_id" },
+        "invoice_number": { "type": "string", "minLength": 1 },
+        "document_date": { "$ref": "#/$defs/date" },
+        "document_status": { "enum": ["draft", "issued", "void"] },
+        "payment_status": { "enum": ["unpaid", "partial", "paid", "refunded", "voided"] },
+        "due_date": { "$ref": "#/$defs/nullable_date" },
+        "customer_tax_exempt_snapshot": { "type": "boolean" },
+        "tax_rate_basis_points_snapshot": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "subtotal_cents": { "$ref": "#/$defs/money_cents" },
+        "discount_cents": { "$ref": "#/$defs/money_cents" },
+        "tax_cents": { "$ref": "#/$defs/money_cents" },
+        "total_cents": { "$ref": "#/$defs/money_cents" },
+        "amount_paid_cents": { "$ref": "#/$defs/money_cents" },
+        "balance_due_cents": { "$ref": "#/$defs/signed_money_cents" },
+        "historical_amount_paid_note": { "type": ["string", "null"] }
+      }
+    },
+    "calendar_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "title", "status", "start_at", "all_day", "completion_affects_production"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "order_portable_id": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "order_item_portable_id": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "title": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["scheduled", "rescheduled", "cancelled", "complete"] },
+        "start_at": { "$ref": "#/$defs/date_time" },
+        "end_at": { "$ref": "#/$defs/nullable_date_time" },
+        "all_day": { "type": "boolean" },
+        "assigned_user_portable_id": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "note": { "type": ["string", "null"] },
+        "completion_affects_production": { "const": false }
+      }
+    },
+    "reminder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "source_type", "source_portable_id", "kind", "status", "due_at"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "source_type": { "enum": ["estimate", "order", "order_item", "invoice", "calendar_event"] },
+        "source_portable_id": { "$ref": "#/$defs/portable_id" },
+        "kind": { "enum": ["due_today", "due_soon", "overdue", "follow_up", "scheduled_incomplete"] },
+        "status": { "enum": ["open", "dismissed", "resolved"] },
+        "due_at": { "$ref": "#/$defs/date_time" }
+      }
+    },
+    "note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "source_type", "source_portable_id", "body", "created_at", "internal"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "source_type": { "enum": ["customer", "estimate", "order", "order_item", "work_order", "invoice"] },
+        "source_portable_id": { "$ref": "#/$defs/portable_id" },
+        "body": { "type": "string", "minLength": 1 },
+        "author_user_portable_id": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "created_at": { "$ref": "#/$defs/date_time" },
+        "internal": { "const": true }
+      }
+    },
+    "attachment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "source_type", "source_portable_id", "file_name", "media_type", "size_bytes", "sha256", "file_inventory_path", "created_at"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "source_type": { "enum": ["customer", "estimate", "order", "order_item", "work_order", "invoice"] },
+        "source_portable_id": { "$ref": "#/$defs/portable_id" },
+        "file_name": { "type": "string", "minLength": 1 },
+        "media_type": { "type": "string", "minLength": 1 },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "file_inventory_path": { "type": "string", "minLength": 1 },
+        "created_at": { "$ref": "#/$defs/date_time" }
+      }
+    },
+    "audit_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "actor_user_portable_id", "action", "entity_type", "entity_portable_id", "occurred_at", "summary"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "actor_user_portable_id": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "action": { "type": "string", "minLength": 1 },
+        "entity_type": { "enum": ["customer", "estimate", "estimate_item", "order", "order_item", "work_order", "invoice", "calendar_event", "reminder", "note", "attachment"] },
+        "entity_portable_id": { "$ref": "#/$defs/portable_id" },
+        "occurred_at": { "$ref": "#/$defs/date_time" },
+        "summary": { "type": "string", "minLength": 1 },
+        "diff": { "type": ["object", "null"], "additionalProperties": true }
+      }
+    }
+  }
+}
