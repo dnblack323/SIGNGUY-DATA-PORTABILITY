@@ -8,13 +8,16 @@ to the MVP repository.
 | --- | --- | --- |
 | Customer | `Customer` | Create same-tenant customer with contact/business data and tax-exemption metadata where supported. |
 | Estimate | `Quote` | Preserve Estimate number/status/totals; expose as canonical MVP Quote. |
+| Estimate Item | Quote line-item equivalent | Preserve manual unit price, decimal quantity, taxable state, line total, position, note, assignment reference, and production-required state. |
 | Order | `Order` | Preserve source Quote link, status, due date, manual totals, and internal notes. |
 | Order Item | `OrderItem` and Work Order linkage where production is required | Preserve manual unit price, line total, production-required flag, stage, completion, due/scheduled fields. Do not run Pricing Engine. |
+| Work Order | `WorkOrder` | Preserve canonical order/customer links, item snapshots, production status, assignment, due dates, lifecycle timestamps, completion/reopen state, and notes. |
 | Invoice | `Invoice` | Enforce one invoice per order and keep document status separate from financial status. |
 | Calendar Event | `CalendarEvent` | Preserve schedule records while keeping completion distinct from production completion. |
 | Reminder | In-app notification/reminder model | Preserve due/late/follow-up state and source record. |
 | Note | Internal note/audit-compatible record | Never expose internal notes to customers. |
 | Attachment | File/attachment model and object storage | Stage package files, verify checksums, then persist tenant-scoped attachment metadata. |
+| Audit Event | MVP audit/provenance equivalent | Preserve actor, action, entity, timestamp, summary, and diff when supported. |
 
 ## Required Later Import Gates
 

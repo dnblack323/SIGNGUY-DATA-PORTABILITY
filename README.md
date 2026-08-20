@@ -13,12 +13,18 @@ application secrets, or full application code.
 - `docs/V1_PORTABILITY_CONTRACT.md`
 - `docs/V1_MVP_MAPPING_FOUNDATION.md`
 - `fixtures/golden/v1-empty-package.json`
+- `fixtures/golden/v1-sample-package.json`
+- `fixtures/invalid/v1-invalid-file-inventory.json`
 - `tools/validate_portable_package.py`
+- `tools/validate_schema.py`
 - `tests/test_validate_portable_package.py`
 
 ## Validation
 
 ```powershell
+python -m pip install -r requirements.txt
+python tools/validate_schema.py
 python -m unittest discover -s tests
 python tools/validate_portable_package.py fixtures/golden/v1-empty-package.json
+python tools/validate_portable_package.py fixtures/golden/v1-sample-package.json
 ```

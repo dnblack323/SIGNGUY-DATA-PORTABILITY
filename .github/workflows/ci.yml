@@ -1,0 +1,37 @@
+name: Portability CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "codex/**"
+
+jobs:
+  portability:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.13"
+          cache: pip
+      - name: Install
+        run: python -m pip install -r requirements.txt
+      - name: JSON Schema validation
+        run: python tools/validate_schema.py
+      - name: Semantic validator tests
+        run: python -m unittest discover -s tests
+      - name: Golden fixture validation
+        run: |
+          python tools/validate_portable_package.py fixtures/golden/v1-empty-package.json
+          python tools/validate_portable_package.py fixtures/golden/v1-sample-package.json
+      - name: Malformed fixture rejection
+        shell: bash
+        run: |
+          if python tools/validate_portable_package.py fixtures/invalid/v1-invalid-file-inventory.json; then
+            echo "invalid fixture unexpectedly passed"
+            exit 1
+          fi
