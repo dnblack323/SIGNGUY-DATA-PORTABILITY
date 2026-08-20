@@ -1,0 +1,232 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://signguy.ai/portable/signguy-slim-portable-v1.schema.json",
+  "title": "SignGuy Slim Portable Package Version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest", "tenants", "customers", "estimates", "orders", "order_items", "invoices", "calendar_events", "reminders", "notes", "attachments"],
+  "properties": {
+    "manifest": { "$ref": "#/$defs/manifest" },
+    "tenants": { "type": "array", "items": { "$ref": "#/$defs/tenant" }, "minItems": 1 },
+    "customers": { "type": "array", "items": { "$ref": "#/$defs/customer" } },
+    "estimates": { "type": "array", "items": { "$ref": "#/$defs/estimate" } },
+    "orders": { "type": "array", "items": { "$ref": "#/$defs/order" } },
+    "order_items": { "type": "array", "items": { "$ref": "#/$defs/order_item" } },
+    "invoices": { "type": "array", "items": { "$ref": "#/$defs/invoice" } },
+    "calendar_events": { "type": "array", "items": { "$ref": "#/$defs/calendar_event" } },
+    "reminders": { "type": "array", "items": { "$ref": "#/$defs/reminder" } },
+    "notes": { "type": "array", "items": { "$ref": "#/$defs/note" } },
+    "attachments": { "type": "array", "items": { "$ref": "#/$defs/attachment" } }
+  },
+  "$defs": {
+    "portable_id": {
+      "type": "string",
+      "pattern": "^sgp_v1_[a-z][a-z0-9_]*_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "iso_datetime": { "type": "string", "format": "date-time" },
+    "money_cents": { "type": "integer", "minimum": 0 },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract_name", "contract_version", "package_id", "created_at", "source_app", "source_app_version", "schema_sha256", "content_sha256", "encryption", "contains_secrets"],
+      "properties": {
+        "contract_name": { "const": "signguy-slim-portable" },
+        "contract_version": { "const": "1.0.0" },
+        "package_id": { "$ref": "#/$defs/portable_id" },
+        "created_at": { "$ref": "#/$defs/iso_datetime" },
+        "source_app": { "const": "SIGNGUY-SLIM" },
+        "source_app_version": { "type": "string", "minLength": 1 },
+        "schema_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "encryption": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["protected", "algorithm"],
+          "properties": {
+            "protected": { "type": "boolean" },
+            "algorithm": { "type": "string", "minLength": 1 }
+          }
+        },
+        "contains_secrets": { "const": false }
+      }
+    },
+    "tenant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "name", "timezone"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "name": { "type": "string", "minLength": 1 },
+        "timezone": { "type": "string", "minLength": 1 },
+        "sales_tax_rate_basis_points": { "type": "integer", "minimum": 0, "maximum": 10000 }
+      }
+    },
+    "customer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "contact_name", "active", "tax_exempt"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "contact_name": { "type": "string", "minLength": 1 },
+        "business_name": { "type": ["string", "null"] },
+        "email": { "type": ["string", "null"] },
+        "phone": { "type": ["string", "null"] },
+        "billing_address": { "type": ["object", "null"], "additionalProperties": true },
+        "tax_exempt": { "type": "boolean" },
+        "tax_exemption_note": { "type": ["string", "null"] },
+        "active": { "type": "boolean" },
+        "internal_notes": { "type": ["string", "null"] }
+      }
+    },
+    "estimate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "customer_portable_id", "estimate_number", "status", "subtotal_cents", "tax_cents", "total_cents"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "customer_portable_id": { "$ref": "#/$defs/portable_id" },
+        "estimate_number": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["draft", "sent", "accepted", "declined", "expired"] },
+        "expires_at": { "type": ["string", "null"] },
+        "follow_up_at": { "type": ["string", "null"] },
+        "converted_order_portable_id": { "type": ["string", "null"] },
+        "subtotal_cents": { "$ref": "#/$defs/money_cents" },
+        "discount_cents": { "$ref": "#/$defs/money_cents" },
+        "tax_cents": { "$ref": "#/$defs/money_cents" },
+        "total_cents": { "$ref": "#/$defs/money_cents" }
+      }
+    },
+    "order": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "customer_portable_id", "order_number", "status", "subtotal_cents", "tax_cents", "total_cents"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "customer_portable_id": { "$ref": "#/$defs/portable_id" },
+        "source_estimate_portable_id": { "type": ["string", "null"] },
+        "order_number": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["draft", "active", "on_hold", "complete", "cancelled"] },
+        "due_date": { "type": ["string", "null"] },
+        "subtotal_cents": { "$ref": "#/$defs/money_cents" },
+        "discount_cents": { "$ref": "#/$defs/money_cents" },
+        "tax_cents": { "$ref": "#/$defs/money_cents" },
+        "total_cents": { "$ref": "#/$defs/money_cents" },
+        "internal_notes": { "type": ["string", "null"] }
+      }
+    },
+    "order_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "order_portable_id", "position", "description", "quantity", "unit_price_cents", "line_total_cents", "taxable", "production_required", "production_stage", "completed"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "order_portable_id": { "$ref": "#/$defs/portable_id" },
+        "source_estimate_portable_id": { "type": ["string", "null"] },
+        "position": { "type": "integer", "minimum": 0 },
+        "description": { "type": "string", "minLength": 1 },
+        "quantity": { "type": "number", "exclusiveMinimum": 0 },
+        "unit_price_cents": { "$ref": "#/$defs/money_cents" },
+        "line_total_cents": { "$ref": "#/$defs/money_cents" },
+        "taxable": { "type": "boolean" },
+        "production_required": { "type": "boolean" },
+        "production_stage": { "enum": ["not_started", "ready", "in_progress", "waiting", "complete"] },
+        "assigned_user_portable_id": { "type": ["string", "null"] },
+        "scheduled_start_at": { "type": ["string", "null"] },
+        "due_date": { "type": ["string", "null"] },
+        "completed": { "type": "boolean" },
+        "completed_at": { "type": ["string", "null"] },
+        "internal_note": { "type": ["string", "null"] }
+      }
+    },
+    "invoice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "order_portable_id", "customer_portable_id", "invoice_number", "document_status", "payment_status", "total_cents", "amount_paid_cents", "balance_due_cents"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "order_portable_id": { "$ref": "#/$defs/portable_id" },
+        "customer_portable_id": { "$ref": "#/$defs/portable_id" },
+        "invoice_number": { "type": "string", "minLength": 1 },
+        "document_status": { "enum": ["draft", "issued", "void"] },
+        "payment_status": { "enum": ["unpaid", "partial", "paid", "refunded", "voided"] },
+        "due_date": { "type": ["string", "null"] },
+        "subtotal_cents": { "$ref": "#/$defs/money_cents" },
+        "discount_cents": { "$ref": "#/$defs/money_cents" },
+        "tax_cents": { "$ref": "#/$defs/money_cents" },
+        "total_cents": { "$ref": "#/$defs/money_cents" },
+        "amount_paid_cents": { "$ref": "#/$defs/money_cents" },
+        "balance_due_cents": { "$ref": "#/$defs/money_cents" }
+      }
+    },
+    "calendar_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "title", "status", "start_at", "completion_affects_production"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "order_portable_id": { "type": ["string", "null"] },
+        "order_item_portable_id": { "type": ["string", "null"] },
+        "title": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["scheduled", "rescheduled", "cancelled", "complete"] },
+        "start_at": { "$ref": "#/$defs/iso_datetime" },
+        "end_at": { "type": ["string", "null"] },
+        "all_day": { "type": "boolean" },
+        "assigned_user_portable_id": { "type": ["string", "null"] },
+        "note": { "type": ["string", "null"] },
+        "completion_affects_production": { "const": false }
+      }
+    },
+    "reminder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "source_type", "source_portable_id", "kind", "status", "due_at"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "source_type": { "enum": ["estimate", "order", "order_item", "invoice", "calendar_event"] },
+        "source_portable_id": { "$ref": "#/$defs/portable_id" },
+        "kind": { "enum": ["due_today", "due_soon", "overdue", "follow_up", "scheduled_incomplete"] },
+        "status": { "enum": ["open", "dismissed", "resolved"] },
+        "due_at": { "$ref": "#/$defs/iso_datetime" }
+      }
+    },
+    "note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "source_type", "source_portable_id", "body", "created_at"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "source_type": { "enum": ["customer", "estimate", "order", "order_item", "invoice"] },
+        "source_portable_id": { "$ref": "#/$defs/portable_id" },
+        "body": { "type": "string", "minLength": 1 },
+        "author_portable_id": { "type": ["string", "null"] },
+        "created_at": { "$ref": "#/$defs/iso_datetime" },
+        "internal": { "const": true }
+      }
+    },
+    "attachment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portable_id", "tenant_portable_id", "source_type", "source_portable_id", "file_name", "mime_type", "size_bytes", "sha256", "storage_path", "created_at"],
+      "properties": {
+        "portable_id": { "$ref": "#/$defs/portable_id" },
+        "tenant_portable_id": { "$ref": "#/$defs/portable_id" },
+        "source_type": { "enum": ["customer", "estimate", "order", "order_item", "invoice"] },
+        "source_portable_id": { "$ref": "#/$defs/portable_id" },
+        "file_name": { "type": "string", "minLength": 1 },
+        "mime_type": { "type": "string", "minLength": 1 },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "storage_path": { "type": "string", "minLength": 1 },
+        "created_at": { "$ref": "#/$defs/iso_datetime" }
+      }
+    }
+  }
+}
