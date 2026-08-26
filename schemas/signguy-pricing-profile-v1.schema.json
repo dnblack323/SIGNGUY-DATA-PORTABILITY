@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://signguy.ai/schemas/signguy-pricing-profile-v1.schema.json",
+  "title": "SignGuy Pricing Profile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_id",
+    "profile_id",
+    "created_at_utc",
+    "source_application",
+    "manifest",
+    "shop_settings",
+    "pricing_entries"
+  ],
+  "properties": {
+    "contract_id": { "const": "signguy-pricing-profile-v1" },
+    "profile_id": { "type": "string", "pattern": "^sgpp_v1_[a-z0-9_]{3,80}$" },
+    "created_at_utc": { "type": "string", "format": "date-time" },
+    "source_application": { "type": "string", "enum": ["price-lab"] },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "profile_version", "engine_version", "currency", "entry_count", "excludes"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "profile_version": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "engine_version": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "entry_count": { "type": "integer", "minimum": 0 },
+        "excludes": {
+          "type": "array",
+          "minItems": 8,
+          "items": { "type": "string", "minLength": 1, "maxLength": 120 }
+        }
+      }
+    },
+    "shop_settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shop_rate", "labor", "overhead", "equipment"],
+      "properties": {
+        "shop_rate": { "$ref": "#/$defs/settingValue" },
+        "labor": { "type": "array", "items": { "$ref": "#/$defs/settingValue" } },
+        "overhead": { "type": "array", "items": { "$ref": "#/$defs/settingValue" } },
+        "equipment": { "type": "array", "items": { "$ref": "#/$defs/settingValue" } }
+      }
+    },
+    "pricing_entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/pricingEntry" }
+    }
+  },
+  "$defs": {
+    "stableKey": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._:-]{2,160}$"
+    },
+    "settingValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stable_key", "unit", "value_kind", "value", "source_class", "provenance"],
+      "properties": {
+        "stable_key": { "$ref": "#/$defs/stableKey" },
+        "unit": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "value_kind": { "type": "string", "enum": ["money_cents", "decimal_string", "basis_points", "integer", "boolean", "text"] },
+        "value": {
+          "oneOf": [
+            { "type": "integer", "minimum": 0 },
+            { "type": "boolean" },
+            { "type": "string", "minLength": 1, "maxLength": 180 }
+          ]
+        },
+        "source_class": { "$ref": "#/$defs/sourceClass" },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "pricingEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stable_key",
+        "record_type",
+        "pricing_category",
+        "unit",
+        "value_kind",
+        "value",
+        "source_class",
+        "review_state",
+        "provenance"
+      ],
+      "properties": {
+        "stable_key": { "$ref": "#/$defs/stableKey" },
+        "record_type": { "type": "string", "enum": ["material", "labor", "service", "overhead", "equipment", "travel", "other"] },
+        "pricing_category": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "unit": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "value_kind": { "type": "string", "enum": ["money_cents", "decimal_string", "basis_points", "integer", "boolean", "text"] },
+        "value": {
+          "oneOf": [
+            { "type": "integer", "minimum": 0 },
+            { "type": "boolean" },
+            { "type": "string", "minLength": 1, "maxLength": 180 }
+          ]
+        },
+        "source_class": { "$ref": "#/$defs/sourceClass" },
+        "review_state": { "type": "string", "enum": ["accepted", "shop_confirmed", "custom", "deferred", "fallback"] },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "sourceClass": {
+      "type": "string",
+      "enum": ["starter", "shop", "benchmark", "fallback", "demo"]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_label"],
+      "properties": {
+        "source_label": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "pack_type": { "type": "string", "enum": ["starter", "benchmark"] },
+        "pack_version": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "accepted_at_utc": { "type": "string", "format": "date-time" },
+        "rationale": { "type": "string", "maxLength": 500 }
+      }
+    }
+  }
+}
