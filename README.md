@@ -25,6 +25,7 @@ Phase 2E adds a separate pricing settings portability foundation:
 
 - `schemas/signguy-pricing-profile-v1.schema.json`
 - `docs/PRICING_PROFILE_V1_PROPOSAL.md`
+- [Pricing Profile v1 Target Mappings](docs/PRICING_PROFILE_V1_TARGET_MAPPINGS.md)
 - `fixtures/golden/pricing-profile-v1-sample.json`
 - `fixtures/invalid/pricing-profile-v1-secret-leak.json`
 - `tools/validate_pricing_profile.py`

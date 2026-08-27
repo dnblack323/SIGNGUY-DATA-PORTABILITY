@@ -1,0 +1,65 @@
+# Pricing Profile v1 Target Mappings
+
+`signguy-pricing-profile-v1` is a contract requirement for later Price Lab-to-Slim and Price Lab-to-MVP portability. It is not a live importer, does not authorize changes to consumer repositories, and does not transfer raw SQLite databases.
+
+This document maps the current pricing-profile JSON contract to verified current target surfaces:
+
+- Price Lab source: `app_settings`, `data_packs`, `source_records`, `review_decisions`, and saved calculation metadata from the local SQLite foundation.
+- SIGNGUY-SLIM target: current Version 1 manual business-data tables. Slim has no pricing-engine settings importer and no pricing-profile storage table today.
+- SIGNGUY-MVP target: current pricing settings, material pricing profiles, pricing components, saved items, and pricing snapshots. Importer implementation remains separately authorized work.
+
+All target imports require schema validation, dry-run preview, unsupported/conflict reporting, explicit owner approval, transactional apply, audit evidence, and rollback on failure.
+
+## Support States
+
+| State | Meaning |
+| --- | --- |
+| Supported | A verified current target field or collection can represent the value without changing its meaning. |
+| Planned | A future adapter location is identified, but no current importer exists. |
+| Conflict Review | The value may map only after unit, value-type, category, or existing-record review. |
+| Unsupported | The current target has no safe storage or semantics for this field. The importer must report it. |
+
+## Import Actions
+
+| Action | Meaning |
+| --- | --- |
+| Add | Create a new target record after dry-run approval. |
+| Update | Mutate an existing supported target record after dry-run approval. |
+| Skip | Do not mutate because the target is already equivalent or the value is informational. |
+| Conflict | Block automatic mutation and require owner review. |
+| Unsupported | Report as unsupported; never silently discard. |
+
+## Mapping Table
+
+| Pricing-profile JSON path or stable-key family | Source value meaning | Canonical unit and value type | Price Lab source entity/field | SIGNGUY-SLIM target | SIGNGUY-MVP target | Current support state | Import action | Provenance and confirmation | Historical-record behavior |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `shop_settings.shop_rate` | Blended or default shop rate used by setup guidance. | Money per hour; `money_cents` or decimal dollars after adapter normalization. | `source_records.stable_record_key`, `canonical_unit`, `money_value_cents`, `canonical_value_json`. | Future adapter only; Slim currently stores manual `estimate_items.unit_price_cents` and `order_items.unit_price_cents`, not shop-rate settings. | `pricing_settings.shop_defaults` when the target field is a verified current hourly-rate field such as `production_hourly_rate`; otherwise conflict. | Conflict Review | Conflict or Update | Require source label, source class, review state, and explicit approval. Unit mismatches block apply. | Existing estimates, orders, invoices, and snapshots are never recalculated. |
+| `shop_settings.labor[]` and `pricing_entries[record_type=labor]` | Labor role or task rate. | Money per hour or decimal hours; typed by `unit` and `value_kind`. | `source_records.record_type='labor'`, `pricing_category`, value fields. | Future adapter only; Slim line items remain manual cents. | `pricing_settings.shop_defaults` labor-rate fields or `pricing_settings.category_defaults.<category>` labor defaults when a verified target field exists. | Conflict Review | Conflict or Update | Require role/category confirmation and dry-run field diff. | Historical commercial records remain fixed. |
+| `shop_settings.overhead[]` and `pricing_entries[record_type=overhead]` | Overhead or burden assumptions. | Basis points, percent, or decimal string per declared unit. | `source_records.record_type='overhead'`. | Future adapter only. | `pricing_settings.shop_defaults.default_overhead_percent`, `labor_burden_percent`, or category defaults when compatible. | Conflict Review | Conflict or Update | Require percent/basis-point normalization evidence. | No historical recalculation. |
+| `shop_settings.equipment[]` and `pricing_entries[record_type=equipment]` | Equipment rate, minimum, or cost assumption. | Money per declared unit, decimal string, or text. | `source_records.record_type='equipment'`. | Future adapter only. | Future adapter location under pricing settings or pricing components; current verified component charge types do not include a general equipment-rate model. | Planned | Conflict | Require field-level owner approval before any future target is used. | No historical recalculation. |
+| `pricing_entries[record_type=travel]` | Travel labor, mileage, trip charge, or site-visit assumption. | Money per hour, mile, trip, or declared unit. | `source_records.record_type='travel'`. | Future adapter only. | `pricing_settings.shop_defaults.travel_hourly_rate` when hourly; other units require conflict review or future component mapping. | Conflict Review | Conflict or Update | Require unit match and owner confirmation. | No historical recalculation. |
+| `pricing_entries[record_type=service]` | Outsourced service, pass-through, setup, design, permit, install, rush, or other non-inventory charge. | Money flat amount, percent, or declared unit. | `source_records.record_type='service'`. | Future adapter only. | `pricing_components` with verified fields `key`, `name`, `charge_type`, `amount`, `percent`, `category_applicability`, `notes`, `active` when charge type is compatible. | Supported | Add or Update | Require stable key match, charge-type match, source label, and explicit approval. | Existing quotes/orders/invoices and pricing snapshots are not rewritten. |
+| `pricing_entries[record_type=material]` | Material/component pricing input from Starter, shop, benchmark, fallback, or demo source. | Money per `per_sqft`, `per_unit`, `per_linear_ft`, `per_garment`, or `other`; value type from profile. | `source_records.record_type='material'`, `stable_record_key`, `canonical_unit`, `money_value_cents`, pack metadata. | Future adapter only; Slim has no material pricing-profile target and uses manual unit prices. | Existing canonical `materials` plus one-to-one `material_pricing_profiles` with fields `material_id`, `pricing_unit`, `normalized_cost_basis`, `waste_percent`, `default_markup_multiplier`, `default_margin_percent`, `suggested_sell_rate`, `minimum_sell_amount`, `category_applicability`, `pricing_source`, `effective_at`, `pricing_notes`, `active`. | Conflict Review | Conflict, Add, or Update | Require a dry-run match to an existing canonical Material or an explicitly approved material creation path. Price Lab stable keys must not create duplicate inventory records silently. | Historical pricing snapshots and committed documents remain unchanged. |
+| `pricing_entries[pricing_category].pricing_method` or category method stable keys | Preferred category pricing method and comparison choices. | Text enum; target-specific method IDs. | `source_records.record_type='other'` or category source rows plus `review_decisions`. | Unsupported in current Slim. | `pricing_settings.category_defaults.<category>.pricing_method` and method-configuration services when target method IDs are verified. | Conflict Review | Conflict or Update | Require method-ID compatibility and dry-run preview. Unknown methods are unsupported. | Existing calculations and documents are not repriced. |
+| Starter accepted values, `source_class='starter'`, provenance `pack_type='starter'` | Owner accepted Starter-pack values. | Per-entry unit/value kind. | `data_packs.pack_type='starter'`, `source_records.source_class='starter'`, `review_decisions.decision='accept'`. | Unsupported in current Slim. | `pricing_settings` and related pricing records only through dry-run apply; target must preserve source metadata in audit or field source evidence. | Planned | Conflict or Update | Require pack version, source label, acceptance timestamp when present, and explicit approval. | Existing records remain fixed. |
+| Shop overrides, `source_class='shop'`, `review_state='shop_confirmed'` | Shop-entered or shop-confirmed replacement for a Starter/benchmark/fallback value. | Per-entry unit/value kind. | `source_records.source_class='shop'`, review/effective-value resolution. | Unsupported in current Slim except manually entered line prices already stored on documents. | `pricing_settings`, `material_pricing_profiles`, or `pricing_components` where compatible. | Conflict Review | Conflict or Update | Require source label, actor/approval evidence if available, and dry-run diff. | Historical records are never retroactively changed. |
+| `review_state` / `review_decisions` | Accepted, shop confirmed, custom, deferred, or fallback status. | Text enum. | `review_decisions.decision`, `source_records.requires_user_confirmation`. | Unsupported in current Slim. | Future import audit/preview metadata; no verified general target collection for review decisions. | Planned | Skip or Conflict | Preserve in dry-run report and audit metadata. Deferred values must not apply automatically. | No historical mutation. |
+| `source_class` | Starter, shop, benchmark, fallback, or demo classification. | Text enum. | `source_records.source_class`. | Unsupported in current Slim. | `pricing_settings.field_sources`, `material_pricing_profiles.pricing_source`, pricing component notes/audit metadata, or future adapter metadata depending on target. | Conflict Review | Conflict or Update | Demo/fallback values require explicit confirmation before apply. | No historical mutation. |
+| `manifest.profile_version`, provenance `pack_version`, and `data_packs.pack_version` | Profile/pack version identity. | Text. | `data_packs.pack_version`, `schema_version`, `content_checksum`; profile manifest. | Unsupported in current Slim. | Future import audit metadata; current pricing settings use `starter_default_version` for starter lineage. | Planned | Skip or Conflict | Must be retained in dry-run/audit evidence. | No historical mutation. |
+| `manifest.currency` and units on every setting/entry | Currency and unit contract. | ISO currency plus declared unit; typed values. | `source_records.canonical_unit`, pricing profile `unit`, `manifest.currency`. | Slim `tenants.currency` currently exists but no pricing-profile apply target exists. | MVP pricing configuration is dollar-based for config; money is converted at snapshot boundary. Currency mismatches conflict. | Conflict Review | Conflict | Require target tenant currency match and unit compatibility. | No historical mutation. |
+| `manifest.engine_version` | Pricing engine version used to produce or validate values. | Text. | Price Lab sidecar health and saved calculation `engine_version`; profile manifest. | Unsupported in current Slim. | Pricing snapshots preserve `calculator_version` and `pricing_engine_result`; settings import should retain engine version in audit/preview metadata. | Planned | Skip | Do not change the target pricing engine version from a profile import. | Existing snapshots retain their original engine evidence. |
+| Stable identifiers: `profile_id`, `stable_key`, `stable_record_key` | Durable identity for matching and idempotency. | Text matching schema key rules. | `source_records.stable_record_key`, profile `stable_key`, local IDs. | Slim `portable_id` exists for business records, but not pricing profile settings. Future adapter only. | MVP `PricingComponent.key`, material-profile matching via canonical Material plus profile id, pricing settings dotted paths, and future audit metadata. | Conflict Review | Add, Update, Skip, or Conflict | Stable-key collisions must be reported in dry-run. Existing unrelated target IDs must not be overwritten. | No historical mutation. |
+
+## Required Import Rules
+
+- Unsupported fields must be reported in the dry-run result; they must never be silently discarded.
+- Unit, currency, value-kind, category, stable-key, or target-type mismatches become conflicts.
+- Target imports require dry-run preview and explicit approval before mutation.
+- Historical calculations, quotes, estimates, orders, Work Orders, invoices, and pricing snapshots are never recalculated.
+- Raw SQLite databases are never transferred to Slim or MVP.
+- Slim and MVP importer implementation remains separately authorized work.
+- This mapping does not authorize changes to SIGNGUY-SLIM or SIGNGUY-MVP.
+
+## Repository Boundaries
+
+This document is documentation-only. It does not change the pricing-profile schema, validator, fixtures, SIGNGUY-SLIM code, SIGNGUY-MVP code, pricing formulas, storage schemas, migrations, or Starter Library data.
