@@ -49,6 +49,32 @@ ALLOWED_SAFETY_DECLARATION_KEYS = {
 }
 
 PORTABLE_ID_RE = re.compile(r"^plsd_v1_[a-z][a-z0-9_]*_[0-9a-f]{12,64}$")
+SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
+MACHINE_PATH_RE = re.compile(r"(?i)(^[a-z]:[\\/]|^\\\\|^/(users|home|var|tmp|private|volumes)/)")
+REVISION_TOTAL_CENT_FIELDS = (
+    "subtotal_cents",
+    "direct_invested_cost_cents",
+    "fully_loaded_cost_cents",
+    "profit_cents",
+    "final_total_cents",
+)
+CUSTOMER_PROJECTION_FORBIDDEN_KEY_FRAGMENTS = (
+    "internal",
+    "directinvested",
+    "fullyloaded",
+    "profit",
+    "margin",
+    "pricingmethod",
+    "sourceid",
+    "sourcetype",
+    "sourcesnapshot",
+    "sourceevidence",
+    "engine",
+    "provenance",
+    "assumption",
+    "warning",
+    "showthemath",
+)
 
 
 class ValidationError(ValueError):
@@ -67,7 +93,7 @@ def _schema() -> dict[str, Any]:
 def _canonical_bytes(package: dict[str, Any]) -> bytes:
     canonical = copy.deepcopy(package)
     canonical["manifest"]["contentSha256"] = "0" * 64
-    return json.dumps(canonical, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return json.dumps(canonical, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
 
 
 def content_hash(package: dict[str, Any]) -> str:
@@ -94,16 +120,36 @@ def _walk(value: Any, path: str = "$"):
             yield from _walk(child, f"{path}[{index}]")
 
 
+def _normalized_key(value: Any) -> str:
+    return re.sub(r"[^a-z0-9]", "", str(value).lower())
+
+
+def _reject_nonfinite_constant(value: str) -> None:
+    raise ValidationError(f"non-finite JSON number is not allowed: {value}")
+
+
+def _load_package(path: Path) -> dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8"), parse_constant=_reject_nonfinite_constant)
+
+
+def _looks_like_machine_path(value: str) -> bool:
+    stripped = value.strip()
+    if MACHINE_PATH_RE.search(stripped):
+        return True
+    return re.search(r"(?i)\b[a-z]:[\\/](users|documents|windows|program files)\b", stripped) is not None
+
+
 def _validate_no_forbidden_keys(package: dict[str, Any]) -> None:
-    for path, key, _child in _walk(package):
-        lowered = str(key).lower()
-        normalized = re.sub(r"[^a-z0-9]", "", lowered)
+    for path, key, child in _walk(package):
+        normalized = _normalized_key(key)
         if normalized in ALLOWED_SAFETY_DECLARATION_KEYS:
             continue
         _require(
-            not any(re.sub(r"[^a-z0-9]", "", fragment.lower()) in normalized for fragment in FORBIDDEN_KEY_FRAGMENTS),
+            not any(_normalized_key(fragment) in normalized for fragment in FORBIDDEN_KEY_FRAGMENTS),
             f"forbidden secret or path-like key {key!r} at {path}",
         )
+        if isinstance(child, str) and _looks_like_machine_path(child):
+            raise ValidationError(f"forbidden machine path value at {path}.{key}")
 
 
 def _validate_dates(package: dict[str, Any]) -> None:
@@ -170,25 +216,48 @@ def _validate_relationships(package: dict[str, Any], by_section: dict[str, dict[
     branding = by_section["brandingProfiles"]
     templates = by_section["templates"]
 
+    revision_numbers_by_document: dict[str, set[int]] = {}
+    seen_projection_revisions: set[str] = set()
+
     for project in package["projects"]:
         customer_id = project["customerPortableId"]
         if customer_id is not None:
             _require(customer_id in customers, "project references unknown customer")
 
+    def root_for(document_id: str) -> str:
+        seen: set[str] = set()
+        current_id = document_id
+        while True:
+            _require(current_id not in seen, "document conversion ancestry contains a cycle")
+            seen.add(current_id)
+            current = documents[current_id]
+            source_id = current["sourceDocumentPortableId"]
+            if source_id is None:
+                _require(current["rootDocumentPortableId"] == current_id, "root document must identify itself")
+                return current_id
+            _require(source_id in documents, "document source ancestry is missing")
+            current_id = source_id
+
     for document in package["documents"]:
+        document_id = document["portableId"]
         if document["customerPortableId"] is not None:
             _require(document["customerPortableId"] in customers, "document references unknown customer")
         if document["projectPortableId"] is not None:
             _require(document["projectPortableId"] in projects, "document references unknown project")
+            project_customer = projects[document["projectPortableId"]]["customerPortableId"]
+            if document["customerPortableId"] is not None and project_customer is not None:
+                _require(project_customer == document["customerPortableId"], "document and project customer references do not agree")
         source_document_id = document["sourceDocumentPortableId"]
         if source_document_id is not None:
             _require(source_document_id in documents, "document source ancestry is missing")
         current_revision_id = document["currentRevisionPortableId"]
+        if document["status"] == "finalized":
+            _require(current_revision_id is not None, "finalized document must identify a current revision")
         if current_revision_id is not None:
             _require(current_revision_id in revisions, "document current revision is missing")
-            _require(revisions[current_revision_id]["documentPortableId"] == document["portableId"], "document current revision belongs to another document")
-        if document["rootDocumentPortableId"] not in documents:
-            _require(document["rootDocumentPortableId"] == document["portableId"], "document root ancestry is missing")
+            _require(revisions[current_revision_id]["documentPortableId"] == document_id, "document current revision belongs to another document")
+        _require(document["rootDocumentPortableId"] in documents, "document root ancestry is missing")
+        _require(root_for(document_id) == document["rootDocumentPortableId"], "document root ancestry does not match source chain")
         for ancestry in document["conversionPath"]:
             source = ancestry.get("sourceDocumentPortableId") or ancestry.get("sourceDocumentId")
             if source:
@@ -199,24 +268,88 @@ def _validate_relationships(package: dict[str, Any], by_section: dict[str, dict[
         _require(document is not None, "revision references unknown document")
         _require(revision["documentType"] == document["documentType"], "revision documentType mismatch")
         _require(revision["documentNumber"] == document["documentNumber"], "revision documentNumber mismatch")
+        revisions_for_document = revision_numbers_by_document.setdefault(revision["documentPortableId"], set())
+        _require(revision["revisionNumber"] not in revisions_for_document, "duplicate revision number within document")
+        revisions_for_document.add(revision["revisionNumber"])
 
     for projection in package["customerProjections"]:
-        _require(projection["documentPortableId"] in documents, "customer projection references unknown document")
-        _require(projection["revisionPortableId"] in revisions, "customer projection references unknown revision")
-        _require(projection["revisionPortableId"] not in [other["revisionPortableId"] for other_id, other in projections.items() if other_id != projection["portableId"]], "duplicate customer projection for revision")
+        document = documents.get(projection["documentPortableId"])
+        revision = revisions.get(projection["revisionPortableId"])
+        _require(document is not None, "customer projection references unknown document")
+        _require(revision is not None, "customer projection references unknown revision")
+        _require(revision["documentPortableId"] == projection["documentPortableId"], "customer projection revision belongs to another document")
+        _require(projection["documentType"] == document["documentType"], "customer projection documentType mismatch")
+        _require(projection["documentNumber"] == document["documentNumber"], "customer projection documentNumber mismatch")
+        _require(projection["revisionPortableId"] not in seen_projection_revisions, "duplicate customer projection for revision")
+        seen_projection_revisions.add(projection["revisionPortableId"])
 
     for template in package["templates"]:
         parent = template["parentTemplatePortableId"]
         if parent is not None:
             _require(parent in templates, "template parent is missing")
 
+    def assert_template_acyclic(template_id: str) -> None:
+        seen: set[str] = set()
+        current_id: str | None = template_id
+        while current_id is not None:
+            _require(current_id not in seen, "template inheritance contains a cycle")
+            seen.add(current_id)
+            current_id = templates[current_id]["parentTemplatePortableId"]
+
+    for template_id in templates:
+        assert_template_acyclic(template_id)
+
     for pdf in package["pdfOutputs"]:
-        _require(pdf["documentPortableId"] in documents, "pdf output references unknown document")
+        document = documents.get(pdf["documentPortableId"])
+        _require(document is not None, "pdf output references unknown document")
         if pdf["revisionPortableId"] is not None:
             _require(pdf["revisionPortableId"] in revisions, "pdf output references unknown revision")
-        _require(pdf["templatePortableId"] in templates, "pdf output references unknown template")
-        _require(pdf["brandingProfilePortableId"] in branding, "pdf output references unknown branding")
+            revision = revisions[pdf["revisionPortableId"]]
+            _require(revision["documentPortableId"] == pdf["documentPortableId"], "pdf output revision belongs to another document")
+            _require(pdf["documentType"] == document["documentType"], "pdf output documentType mismatch")
+            _require(pdf["documentNumber"] == document["documentNumber"], "pdf output documentNumber mismatch")
+        template = templates.get(pdf["templatePortableId"])
+        branding_profile = branding.get(pdf["brandingProfilePortableId"])
+        _require(template is not None, "pdf output references unknown template")
+        _require(branding_profile is not None, "pdf output references unknown branding")
+        _require(template["documentType"] == pdf["documentType"], "pdf output template documentType mismatch")
+        _require(template["versionNumber"] == pdf["templateVersion"], "pdf output template version mismatch")
+        _require(branding_profile["versionNumber"] == pdf["brandingVersion"], "pdf output branding version mismatch")
         _require("/" not in pdf["filename"] and "\\" not in pdf["filename"] and ".." not in pdf["filename"], "pdf filename must be package-relative")
+
+
+def _validate_revision_totals(revision: dict[str, Any]) -> None:
+    totals = revision["totals"]
+    body = totals.get("totals") if isinstance(totals.get("totals"), dict) else None
+    _require(body is not None, "revision totals must preserve engine totals")
+    for field in REVISION_TOTAL_CENT_FIELDS:
+        _require(isinstance(body.get(field), int), f"revision totals.{field} must be an integer number of cents")
+
+
+def _validate_revision_engine_identity(revision: dict[str, Any]) -> None:
+    _require(SHA256_RE.fullmatch(str(revision["engineWheelSha256"] or "")) is not None, "engineWheelSha256 must be a SHA-256 hex digest")
+    engine = revision["sourceEvidence"].get("engine") if isinstance(revision["sourceEvidence"].get("engine"), dict) else {}
+    if "engineVersion" in engine:
+        _require(engine["engineVersion"] == revision["engineVersion"], "revision engineVersion does not match sourceEvidence.engine")
+    if "engineSourceCommit" in engine:
+        _require(engine["engineSourceCommit"] == revision["engineSourceCommit"], "revision engineSourceCommit does not match sourceEvidence.engine")
+    for key in ("engineWheelSha256", "wheelSha256"):
+        if key in engine:
+            _require(str(engine[key]).lower() == str(revision["engineWheelSha256"]).lower(), "revision engineWheelSha256 does not match sourceEvidence.engine")
+
+
+def _validate_customer_projection_safe(value: Any, path: str = "$.projection") -> None:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            normalized = _normalized_key(key)
+            _require(
+                not any(fragment in normalized for fragment in CUSTOMER_PROJECTION_FORBIDDEN_KEY_FRAGMENTS),
+                f"customer projection contains internal-only field {key!r} at {path}",
+            )
+            _validate_customer_projection_safe(child, f"{path}.{key}")
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            _validate_customer_projection_safe(child, f"{path}[{index}]")
 
 
 def _validate_internal_evidence(package: dict[str, Any]) -> None:
@@ -224,12 +357,14 @@ def _validate_internal_evidence(package: dict[str, Any]) -> None:
     for revision in package["revisions"]:
         totals = revision["totals"]
         source_evidence = revision["sourceEvidence"]
-        _require(isinstance(totals.get("totals"), dict), "revision totals must preserve engine totals")
         _require(isinstance(source_evidence.get("engine"), dict), "revision must preserve engine identity evidence")
         _require(isinstance(source_evidence.get("showTheMath"), dict), "revision must preserve Show the Math evidence")
+        _validate_revision_totals(revision)
+        _validate_revision_engine_identity(revision)
     for projection in package["customerProjections"]:
         projection_body = projection["projection"]
         _require(projection_body.get("view") == "customer", "customer projection must preserve customer-safe view marker")
+        _validate_customer_projection_safe(projection_body)
 
 
 def validate_package(package: dict[str, Any]) -> list[str]:
@@ -248,8 +383,8 @@ def main(argv: list[str]) -> int:
     if len(argv) != 2:
         print("Usage: validate_price_lab_sales_documents.py <package.json>", file=sys.stderr)
         return 2
-    package = json.loads(Path(argv[1]).read_text(encoding="utf-8"))
     try:
+        package = _load_package(Path(argv[1]))
         for message in validate_package(package):
             print(message)
     except ValidationError as exc:
