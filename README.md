@@ -35,6 +35,23 @@ This contract is separate from the Slim business-data Version 1 package. It
 excludes customers, estimates, orders, invoices, payments, credentials, license
 data, private URLs, product-specific UI state, and raw SQLite files.
 
+## Price Lab Sales Documents v1
+
+Phase 5D adds a separate Price Lab Sales Documents portability contract:
+
+- `schemas/price-lab-sales-documents-v1.schema.json`
+- [Price Lab Sales Documents v1 Contract](docs/PRICE_LAB_SALES_DOCUMENTS_V1_CONTRACT.md)
+- `fixtures/golden/price-lab-sales-documents-v1-sample.json`
+- focused invalid fixtures under `fixtures/invalid/price-lab-sales-documents-v1-*`
+- `tools/validate_price_lab_sales_documents.py`
+- `tests/test_validate_price_lab_sales_documents.py`
+
+This package transfers selected Price Lab Estimates, Quotes, and Invoices
+between local Price Lab installations. It preserves revisions, immutable pricing
+snapshots, customer-safe projections, conversion ancestry, branding/template
+evidence, and generated PDF metadata. It is not a customer-facing PDF and it may
+contain both customer information and internal pricing information.
+
 ## Validation
 
 ```powershell
@@ -44,4 +61,5 @@ python -m unittest discover -s tests
 python tools/validate_portable_package.py fixtures/golden/v1-empty-package.json
 python tools/validate_portable_package.py fixtures/golden/v1-sample-package.json
 python tools/validate_pricing_profile.py fixtures/golden/pricing-profile-v1-sample.json
+python tools/validate_price_lab_sales_documents.py fixtures/golden/price-lab-sales-documents-v1-sample.json
 ```
