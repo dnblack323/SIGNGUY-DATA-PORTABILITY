@@ -1,0 +1,611 @@
+{
+  "assets": [
+    {
+      "dataBase64": "UE5H",
+      "filename": "shop-logo.png",
+      "mimeType": "image/png",
+      "portableId": "plsd_v1_asset_cccccccccccc",
+      "purpose": "brandingLogo",
+      "sha256": "796120837694d3f3f29259cfeb25091698c2a0aa87873658d840b4993ee889b3",
+      "sizeBytes": 3
+    }
+  ],
+  "brandingProfiles": [
+    {
+      "address": {
+        "city": "Fort Wayne",
+        "line1": "100 Main",
+        "postalCode": "46802",
+        "state": "IN"
+      },
+      "brandingSchemaVersion": 1,
+      "businessName": "Jones Sign Shop",
+      "colors": {
+        "accent": "#0E7490",
+        "primary": "#123456"
+      },
+      "contact": {
+        "email": "sales@example.com",
+        "phone": "555-0101"
+      },
+      "createdUtc": "2026-09-01T09:00:00Z",
+      "footerText": "Thank you for your business.",
+      "logo": {
+        "assetPortableId": "plsd_v1_asset_cccccccccccc",
+        "fileName": "shop-logo.png",
+        "mimeType": "image/png",
+        "sha256": "796120837694d3f3f29259cfeb25091698c2a0aa87873658d840b4993ee889b3",
+        "sizeBytes": 3
+      },
+      "portableId": "plsd_v1_branding_bbbbbbbbbbbb",
+      "sourceLocalId": "brand-1",
+      "status": "active",
+      "updatedUtc": "2026-09-01T09:00:00Z",
+      "versionNumber": 1
+    }
+  ],
+  "customerProjections": [
+    {
+      "createdUtc": "2026-09-01T10:05:00Z",
+      "documentNumber": "EST-1001",
+      "documentPortableId": "plsd_v1_document_444444444444",
+      "documentType": "estimate",
+      "portableId": "plsd_v1_projection_888888888888",
+      "projection": {
+        "adjustments": {
+          "discounts": [],
+          "documentAdjustments": [],
+          "fees": [],
+          "taxPolicy": {
+            "taxRateBps": 700
+          }
+        },
+        "customer": {
+          "contact": {
+            "email": "orders@example.com",
+            "phone": "555-0100"
+          },
+          "displayName": "Jones Hardware"
+        },
+        "document": {
+          "createdUtc": "2026-09-01T10:05:00Z",
+          "documentNumber": "EST-1001",
+          "documentType": "estimate",
+          "revisionNumber": 1,
+          "status": "finalized",
+          "title": "Lobby sign estimate"
+        },
+        "lineItems": [
+          {
+            "description": "Lobby sign",
+            "lineNumber": 1,
+            "lineSubtotalCents": 12500,
+            "lineTotalCents": 12500,
+            "quantity": 1,
+            "unitPriceCents": 12500
+          }
+        ],
+        "notes": {
+          "customer": "Thank you."
+        },
+        "project": {
+          "projectName": "Lobby signs"
+        },
+        "terms": {
+          "payment": "Due on receipt"
+        },
+        "totals": {
+          "finalTotalCents": 13375,
+          "subtotalCents": 12500,
+          "taxCents": 875,
+          "taxableAmountCents": 12500
+        },
+        "view": "customer"
+      },
+      "revisionPortableId": "plsd_v1_revision_555555555555",
+      "sourceLocalId": "proj-est-1"
+    },
+    {
+      "createdUtc": "2026-09-01T11:05:00Z",
+      "documentNumber": "QTE-1001",
+      "documentPortableId": "plsd_v1_document_666666666666",
+      "documentType": "quote",
+      "portableId": "plsd_v1_projection_999999999999",
+      "projection": {
+        "adjustments": {
+          "discounts": [],
+          "documentAdjustments": [],
+          "fees": [],
+          "taxPolicy": {
+            "taxRateBps": 700
+          }
+        },
+        "customer": {
+          "contact": {
+            "email": "orders@example.com",
+            "phone": "555-0100"
+          },
+          "displayName": "Jones Hardware"
+        },
+        "document": {
+          "createdUtc": "2026-09-01T11:05:00Z",
+          "documentNumber": "QTE-1001",
+          "documentType": "quote",
+          "revisionNumber": 1,
+          "status": "finalized",
+          "title": "Lobby sign quote"
+        },
+        "lineItems": [
+          {
+            "description": "Lobby sign",
+            "lineNumber": 1,
+            "lineSubtotalCents": 12500,
+            "lineTotalCents": 12500,
+            "quantity": 1,
+            "unitPriceCents": 12500
+          }
+        ],
+        "notes": {
+          "customer": "Quote approved for production."
+        },
+        "project": {
+          "projectName": "Lobby signs"
+        },
+        "terms": {
+          "payment": "Due on receipt"
+        },
+        "totals": {
+          "finalTotalCents": 13375,
+          "subtotalCents": 12500,
+          "taxCents": 875,
+          "taxableAmountCents": 12500
+        },
+        "view": "customer"
+      },
+      "revisionPortableId": "plsd_v1_revision_777777777777",
+      "sourceLocalId": "proj-quote-1"
+    }
+  ],
+  "customers": [
+    {
+      "archivedUtc": null,
+      "contact": {
+        "email": "orders@example.com",
+        "phone": "555-0100"
+      },
+      "createdUtc": "2026-09-01T10:00:00Z",
+      "displayName": "Jones Hardware",
+      "portableId": "plsd_v1_customer_222222222222",
+      "sourceLocalId": "cust-1",
+      "status": "active",
+      "updatedUtc": "2026-09-01T10:00:00Z"
+    }
+  ],
+  "documents": [
+    {
+      "adjustmentPolicy": {
+        "taxPolicy": {
+          "taxRateBps": 700
+        }
+      },
+      "archivedUtc": null,
+      "conversionPath": [],
+      "convertedFromDocumentType": null,
+      "createdUtc": "2026-09-01T10:00:00Z",
+      "currentRevisionPortableId": "plsd_v1_revision_555555555555",
+      "customerPortableId": "plsd_v1_customer_222222222222",
+      "documentNumber": "EST-1001",
+      "documentType": "estimate",
+      "finalizedUtc": "2026-09-01T10:05:00Z",
+      "lineItems": [
+        {
+          "customerDescription": "Lobby sign",
+          "customerPriceCents": 12500,
+          "description": "Internal lobby sign calculation",
+          "directInvestedCostCents": 5000,
+          "documentQuantity": 1,
+          "fullyLoadedCostCents": 8000,
+          "lineItemId": "line-1",
+          "profitCents": 4500,
+          "sourceId": "calc-1",
+          "sourceSnapshot": {
+            "calculationId": "calc-1",
+            "engineResultSnapshot": {
+              "price": {
+                "sellingPriceCents": 12500
+              }
+            }
+          },
+          "sourceType": "calculation"
+        }
+      ],
+      "notes": {
+        "customer": "Thank you."
+      },
+      "portableId": "plsd_v1_document_444444444444",
+      "projectPortableId": "plsd_v1_project_333333333333",
+      "rootDocumentPortableId": "plsd_v1_document_444444444444",
+      "sourceDocumentPortableId": null,
+      "sourceEvidence": {
+        "contractVersion": "phase5a_sales_document_workspace_v1",
+        "engine": {
+          "engineSourceCommit": "6c49fc7b110596d1826c6cd2d00cd835b7dcc44d",
+          "engineVersion": "0.3.0"
+        },
+        "lineSources": [
+          {
+            "lineItemId": "line-1",
+            "sourceId": "calc-1",
+            "sourceType": "calculation"
+          }
+        ],
+        "showTheMath": {
+          "rows": [
+            {
+              "amountCents": 12500,
+              "label": "Subtotal"
+            }
+          ]
+        }
+      },
+      "sourceLocalId": "doc-est-1",
+      "status": "finalized",
+      "terms": {
+        "payment": "Due on receipt"
+      },
+      "title": "Lobby sign estimate",
+      "totals": {
+        "contract": "phase5a_sales_document_totals_v1",
+        "line_items": [
+          {
+            "line_id": "line-1",
+            "line_subtotal_cents": 12500,
+            "line_total_cents": 12500
+          }
+        ],
+        "totals": {
+          "adjustments_cents": 0,
+          "direct_invested_cost_cents": 5000,
+          "discount_cents": 0,
+          "fees_cents": 0,
+          "final_total_cents": 13375,
+          "fully_loaded_cost_cents": 8000,
+          "profit_cents": 4500,
+          "subtotal_cents": 12500,
+          "tax_cents": 875,
+          "taxable_amount_cents": 12500
+        }
+      },
+      "updatedUtc": "2026-09-01T10:05:00Z"
+    },
+    {
+      "adjustmentPolicy": {
+        "taxPolicy": {
+          "taxRateBps": 700
+        }
+      },
+      "archivedUtc": null,
+      "conversionPath": [
+        {
+          "convertedUtc": "2026-09-01T11:00:00Z",
+          "sourceDocumentPortableId": "plsd_v1_document_444444444444",
+          "sourceRevisionPortableId": "plsd_v1_revision_555555555555",
+          "targetDocumentType": "quote"
+        }
+      ],
+      "convertedFromDocumentType": "estimate",
+      "createdUtc": "2026-09-01T11:00:00Z",
+      "currentRevisionPortableId": "plsd_v1_revision_777777777777",
+      "customerPortableId": "plsd_v1_customer_222222222222",
+      "documentNumber": "QTE-1001",
+      "documentType": "quote",
+      "finalizedUtc": "2026-09-01T11:05:00Z",
+      "lineItems": [
+        {
+          "customerDescription": "Lobby sign",
+          "customerPriceCents": 12500,
+          "description": "Internal lobby sign calculation",
+          "directInvestedCostCents": 5000,
+          "documentQuantity": 1,
+          "fullyLoadedCostCents": 8000,
+          "lineItemId": "line-1",
+          "profitCents": 4500,
+          "sourceId": "calc-1",
+          "sourceSnapshot": {
+            "calculationId": "calc-1",
+            "engineResultSnapshot": {
+              "price": {
+                "sellingPriceCents": 12500
+              }
+            }
+          },
+          "sourceType": "calculation"
+        }
+      ],
+      "notes": {
+        "customer": "Quote approved for production."
+      },
+      "portableId": "plsd_v1_document_666666666666",
+      "projectPortableId": "plsd_v1_project_333333333333",
+      "rootDocumentPortableId": "plsd_v1_document_444444444444",
+      "sourceDocumentPortableId": "plsd_v1_document_444444444444",
+      "sourceEvidence": {
+        "contractVersion": "phase5a_sales_document_workspace_v1",
+        "engine": {
+          "engineSourceCommit": "6c49fc7b110596d1826c6cd2d00cd835b7dcc44d",
+          "engineVersion": "0.3.0"
+        },
+        "lineSources": [
+          {
+            "lineItemId": "line-1",
+            "sourceId": "calc-1",
+            "sourceType": "calculation"
+          }
+        ],
+        "showTheMath": {
+          "rows": [
+            {
+              "amountCents": 12500,
+              "label": "Subtotal"
+            }
+          ]
+        }
+      },
+      "sourceLocalId": "doc-quote-1",
+      "status": "finalized",
+      "terms": {
+        "payment": "Due on receipt"
+      },
+      "title": "Lobby sign quote",
+      "totals": {
+        "contract": "phase5a_sales_document_totals_v1",
+        "line_items": [
+          {
+            "line_id": "line-1",
+            "line_subtotal_cents": 12500,
+            "line_total_cents": 12500
+          }
+        ],
+        "totals": {
+          "adjustments_cents": 0,
+          "direct_invested_cost_cents": 5000,
+          "discount_cents": 0,
+          "fees_cents": 0,
+          "final_total_cents": 13375,
+          "fully_loaded_cost_cents": 8000,
+          "profit_cents": 4500,
+          "subtotal_cents": 12500,
+          "tax_cents": 875,
+          "taxable_amount_cents": 12500
+        }
+      },
+      "updatedUtc": "2026-09-01T11:05:00Z"
+    }
+  ],
+  "manifest": {
+    "compatibility": {
+      "maximumPriceLabSchemaVersion": 14,
+      "minimumPriceLabSchemaVersion": 14
+    },
+    "containsCustomerInformation": true,
+    "containsInternalPricingInformation": true,
+    "containsSecrets": false,
+    "contentSha256": "dec87585c293ff1c067df904de49f25b9ac9a264a2b51cceb5946f75467fd468",
+    "contractName": "price-lab-sales-documents",
+    "contractVersion": "1.0.0",
+    "createdAtUtc": "2026-09-04T06:30:00Z",
+    "currency": "USD",
+    "exportId": "plsd_v1_export_aaaaaaaaaaaa",
+    "formatVersion": 999,
+    "includesMachinePaths": false,
+    "includesRawDatabase": false,
+    "recordCounts": {
+      "assets": 1,
+      "brandingProfiles": 1,
+      "customerProjections": 2,
+      "customers": 1,
+      "documents": 2,
+      "pdfOutputs": 1,
+      "projects": 1,
+      "revisions": 2,
+      "templates": 1
+    },
+    "schemaVersion": 14,
+    "sourceApplication": "SignGuy AI Price Lab",
+    "sourceApplicationVersion": "0.1.0",
+    "sourceShopPortableId": "plsd_v1_shop_111111111111"
+  },
+  "pdfOutputs": [
+    {
+      "brandingProfilePortableId": "plsd_v1_branding_bbbbbbbbbbbb",
+      "brandingVersion": 1,
+      "createdUtc": "2026-09-01T12:00:00Z",
+      "documentNumber": "EST-1001",
+      "documentPortableId": "plsd_v1_document_444444444444",
+      "documentType": "estimate",
+      "filename": "EST-1001.pdf",
+      "metadata": {
+        "documentNumber": "EST-1001",
+        "generatedFrom": "finalized_customer_projection"
+      },
+      "portableId": "plsd_v1_pdf_eeeeeeeeeeee",
+      "revisionPortableId": "plsd_v1_revision_555555555555",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "sourceLocalId": "pdf-1",
+      "templatePortableId": "plsd_v1_template_dddddddddddd",
+      "templateVersion": 1
+    }
+  ],
+  "projects": [
+    {
+      "archivedUtc": null,
+      "createdUtc": "2026-09-01T10:00:00Z",
+      "customerPortableId": "plsd_v1_customer_222222222222",
+      "portableId": "plsd_v1_project_333333333333",
+      "projectName": "Lobby signs",
+      "sourceLocalId": "proj-1",
+      "status": "active",
+      "updatedUtc": "2026-09-01T10:00:00Z"
+    }
+  ],
+  "revisions": [
+    {
+      "adjustmentPolicy": {
+        "taxPolicy": {
+          "taxRateBps": 700
+        }
+      },
+      "createdUtc": "2026-09-01T10:05:00Z",
+      "documentNumber": "EST-1001",
+      "documentPortableId": "plsd_v1_document_444444444444",
+      "documentType": "estimate",
+      "engineSourceCommit": "6c49fc7b110596d1826c6cd2d00cd835b7dcc44d",
+      "engineVersion": "0.3.0",
+      "engineWheelSha256": "473D88C32AFF0D45F850F0FC39DD111EC796FB2D0CC7F78896EDEE4DEB5C3E47",
+      "lineItems": [
+        {
+          "customerDescription": "Lobby sign",
+          "customerPriceCents": 12500,
+          "description": "Internal lobby sign calculation",
+          "directInvestedCostCents": 5000,
+          "documentQuantity": 1,
+          "fullyLoadedCostCents": 8000,
+          "lineItemId": "line-1",
+          "profitCents": 4500,
+          "sourceId": "calc-1",
+          "sourceType": "calculation"
+        }
+      ],
+      "notes": {
+        "customer": "Thank you."
+      },
+      "portableId": "plsd_v1_revision_555555555555",
+      "revisionNumber": 1,
+      "sourceEvidence": {
+        "engine": {
+          "engineSourceCommit": "6c49fc7b110596d1826c6cd2d00cd835b7dcc44d",
+          "engineVersion": "0.3.0"
+        },
+        "showTheMath": {
+          "rows": [
+            {
+              "amountCents": 12500,
+              "label": "Subtotal"
+            }
+          ]
+        }
+      },
+      "sourceLocalId": "rev-est-1",
+      "terms": {
+        "payment": "Due on receipt"
+      },
+      "totals": {
+        "contract": "phase5a_sales_document_totals_v1",
+        "totals": {
+          "direct_invested_cost_cents": 5000,
+          "final_total_cents": 13375,
+          "fully_loaded_cost_cents": 8000,
+          "profit_cents": 4500,
+          "subtotal_cents": 12500
+        }
+      }
+    },
+    {
+      "adjustmentPolicy": {
+        "taxPolicy": {
+          "taxRateBps": 700
+        }
+      },
+      "createdUtc": "2026-09-01T11:05:00Z",
+      "documentNumber": "QTE-1001",
+      "documentPortableId": "plsd_v1_document_666666666666",
+      "documentType": "quote",
+      "engineSourceCommit": "6c49fc7b110596d1826c6cd2d00cd835b7dcc44d",
+      "engineVersion": "0.3.0",
+      "engineWheelSha256": "473D88C32AFF0D45F850F0FC39DD111EC796FB2D0CC7F78896EDEE4DEB5C3E47",
+      "lineItems": [
+        {
+          "customerDescription": "Lobby sign",
+          "customerPriceCents": 12500,
+          "description": "Internal lobby sign calculation",
+          "directInvestedCostCents": 5000,
+          "documentQuantity": 1,
+          "fullyLoadedCostCents": 8000,
+          "lineItemId": "line-1",
+          "profitCents": 4500,
+          "sourceId": "calc-1",
+          "sourceType": "calculation"
+        }
+      ],
+      "notes": {
+        "customer": "Quote approved for production."
+      },
+      "portableId": "plsd_v1_revision_777777777777",
+      "revisionNumber": 1,
+      "sourceEvidence": {
+        "engine": {
+          "engineSourceCommit": "6c49fc7b110596d1826c6cd2d00cd835b7dcc44d",
+          "engineVersion": "0.3.0"
+        },
+        "showTheMath": {
+          "rows": [
+            {
+              "amountCents": 12500,
+              "label": "Subtotal"
+            }
+          ]
+        }
+      },
+      "sourceLocalId": "rev-quote-1",
+      "terms": {
+        "payment": "Due on receipt"
+      },
+      "totals": {
+        "contract": "phase5a_sales_document_totals_v1",
+        "totals": {
+          "direct_invested_cost_cents": 5000,
+          "final_total_cents": 13375,
+          "fully_loaded_cost_cents": 8000,
+          "profit_cents": 4500,
+          "subtotal_cents": 12500
+        }
+      }
+    }
+  ],
+  "templates": [
+    {
+      "createdUtc": "2026-09-01T09:00:00Z",
+      "defaultTerms": {
+        "payment": "Due on receipt"
+      },
+      "documentType": "estimate",
+      "layout": {
+        "documentType": "estimate",
+        "pageSetup": {
+          "edgeInset": "0.5in",
+          "size": "letter"
+        },
+        "repeatHeader": true,
+        "schemaVersion": 1,
+        "sections": [
+          "header",
+          "customer",
+          "lineItems",
+          "totals",
+          "terms",
+          "footer"
+        ],
+        "showDraftMark": true,
+        "templateKind": "professional_default"
+      },
+      "parentTemplatePortableId": null,
+      "portableId": "plsd_v1_template_dddddddddddd",
+      "sourceLocalId": "template-1",
+      "status": "active",
+      "templateName": "Professional Estimate",
+      "templateSchemaVersion": 1,
+      "updatedUtc": "2026-09-01T09:00:00Z",
+      "versionNumber": 1
+    }
+  ]
+}

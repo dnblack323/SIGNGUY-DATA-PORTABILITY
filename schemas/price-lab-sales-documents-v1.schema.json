@@ -1,0 +1,339 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://signguy.ai/portable/price-lab-sales-documents-v1.schema.json",
+  "title": "Price Lab Sales Documents Portable Package Version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest",
+    "customers",
+    "projects",
+    "documents",
+    "revisions",
+    "customerProjections",
+    "brandingProfiles",
+    "templates",
+    "pdfOutputs",
+    "assets"
+  ],
+  "properties": {
+    "manifest": { "$ref": "#/$defs/manifest" },
+    "customers": { "type": "array", "items": { "$ref": "#/$defs/customer" } },
+    "projects": { "type": "array", "items": { "$ref": "#/$defs/project" } },
+    "documents": { "type": "array", "items": { "$ref": "#/$defs/document" } },
+    "revisions": { "type": "array", "items": { "$ref": "#/$defs/revision" } },
+    "customerProjections": { "type": "array", "items": { "$ref": "#/$defs/customer_projection" } },
+    "brandingProfiles": { "type": "array", "items": { "$ref": "#/$defs/branding_profile" } },
+    "templates": { "type": "array", "items": { "$ref": "#/$defs/template" } },
+    "pdfOutputs": { "type": "array", "items": { "$ref": "#/$defs/pdf_output" } },
+    "assets": { "type": "array", "items": { "$ref": "#/$defs/asset" } }
+  },
+  "$defs": {
+    "portable_id": {
+      "type": "string",
+      "pattern": "^plsd_v1_[a-z][a-z0-9_]*_[0-9a-f]{12,64}$"
+    },
+    "date_time": { "type": "string", "format": "date-time" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "money_cents": { "type": "integer", "minimum": 0 },
+    "signed_money_cents": { "type": "integer" },
+    "json_object": { "type": "object", "additionalProperties": true },
+    "document_type": { "enum": ["estimate", "quote", "invoice"] },
+    "document_status": { "enum": ["draft", "finalized", "archived"] },
+    "record_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "customers",
+        "projects",
+        "documents",
+        "revisions",
+        "customerProjections",
+        "brandingProfiles",
+        "templates",
+        "pdfOutputs",
+        "assets"
+      ],
+      "properties": {
+        "customers": { "type": "integer", "minimum": 0 },
+        "projects": { "type": "integer", "minimum": 0 },
+        "documents": { "type": "integer", "minimum": 0 },
+        "revisions": { "type": "integer", "minimum": 0 },
+        "customerProjections": { "type": "integer", "minimum": 0 },
+        "brandingProfiles": { "type": "integer", "minimum": 0 },
+        "templates": { "type": "integer", "minimum": 0 },
+        "pdfOutputs": { "type": "integer", "minimum": 0 },
+        "assets": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contractName",
+        "contractVersion",
+        "formatVersion",
+        "schemaVersion",
+        "exportId",
+        "createdAtUtc",
+        "sourceApplication",
+        "sourceApplicationVersion",
+        "sourceShopPortableId",
+        "currency",
+        "recordCounts",
+        "contentSha256",
+        "compatibility",
+        "containsCustomerInformation",
+        "containsInternalPricingInformation",
+        "containsSecrets",
+        "includesRawDatabase",
+        "includesMachinePaths"
+      ],
+      "properties": {
+        "contractName": { "const": "price-lab-sales-documents" },
+        "contractVersion": { "const": "1.0.0" },
+        "formatVersion": { "const": 1 },
+        "schemaVersion": { "type": "integer", "minimum": 1 },
+        "exportId": { "$ref": "#/$defs/portable_id" },
+        "createdAtUtc": { "$ref": "#/$defs/date_time" },
+        "sourceApplication": { "const": "SignGuy AI Price Lab" },
+        "sourceApplicationVersion": { "type": "string", "minLength": 1 },
+        "sourceShopPortableId": { "$ref": "#/$defs/portable_id" },
+        "currency": { "const": "USD" },
+        "recordCounts": { "$ref": "#/$defs/record_counts" },
+        "contentSha256": { "$ref": "#/$defs/sha256" },
+        "compatibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["minimumPriceLabSchemaVersion", "maximumPriceLabSchemaVersion"],
+          "properties": {
+            "minimumPriceLabSchemaVersion": { "type": "integer", "minimum": 1 },
+            "maximumPriceLabSchemaVersion": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "signature": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "containsCustomerInformation": { "const": true },
+        "containsInternalPricingInformation": { "const": true },
+        "containsSecrets": { "const": false },
+        "includesRawDatabase": { "const": false },
+        "includesMachinePaths": { "const": false }
+      }
+    },
+    "customer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portableId", "displayName", "contact", "status", "createdUtc", "updatedUtc", "sourceLocalId"],
+      "properties": {
+        "portableId": { "$ref": "#/$defs/portable_id" },
+        "sourceLocalId": { "type": "string", "minLength": 1 },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "contact": { "$ref": "#/$defs/json_object" },
+        "status": { "enum": ["active", "archived"] },
+        "createdUtc": { "$ref": "#/$defs/date_time" },
+        "updatedUtc": { "$ref": "#/$defs/date_time" },
+        "archivedUtc": { "anyOf": [{ "$ref": "#/$defs/date_time" }, { "type": "null" }] }
+      }
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portableId", "sourceLocalId", "customerPortableId", "projectName", "status", "createdUtc", "updatedUtc"],
+      "properties": {
+        "portableId": { "$ref": "#/$defs/portable_id" },
+        "sourceLocalId": { "type": "string", "minLength": 1 },
+        "customerPortableId": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "projectName": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "status": { "enum": ["active", "archived"] },
+        "createdUtc": { "$ref": "#/$defs/date_time" },
+        "updatedUtc": { "$ref": "#/$defs/date_time" },
+        "archivedUtc": { "anyOf": [{ "$ref": "#/$defs/date_time" }, { "type": "null" }] }
+      }
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "portableId",
+        "sourceLocalId",
+        "rootDocumentPortableId",
+        "documentType",
+        "documentNumber",
+        "title",
+        "status",
+        "customerPortableId",
+        "projectPortableId",
+        "sourceDocumentPortableId",
+        "convertedFromDocumentType",
+        "conversionPath",
+        "currentRevisionPortableId",
+        "lineItems",
+        "notes",
+        "terms",
+        "adjustmentPolicy",
+        "totals",
+        "sourceEvidence",
+        "createdUtc",
+        "updatedUtc",
+        "finalizedUtc",
+        "archivedUtc"
+      ],
+      "properties": {
+        "portableId": { "$ref": "#/$defs/portable_id" },
+        "sourceLocalId": { "type": "string", "minLength": 1 },
+        "rootDocumentPortableId": { "$ref": "#/$defs/portable_id" },
+        "documentType": { "$ref": "#/$defs/document_type" },
+        "documentNumber": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "status": { "$ref": "#/$defs/document_status" },
+        "customerPortableId": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "projectPortableId": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "sourceDocumentPortableId": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "convertedFromDocumentType": { "anyOf": [{ "$ref": "#/$defs/document_type" }, { "type": "null" }] },
+        "conversionPath": { "type": "array", "items": { "$ref": "#/$defs/json_object" } },
+        "currentRevisionPortableId": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "lineItems": { "type": "array", "items": { "$ref": "#/$defs/json_object" } },
+        "notes": { "$ref": "#/$defs/json_object" },
+        "terms": { "$ref": "#/$defs/json_object" },
+        "adjustmentPolicy": { "$ref": "#/$defs/json_object" },
+        "totals": { "$ref": "#/$defs/json_object" },
+        "sourceEvidence": { "$ref": "#/$defs/json_object" },
+        "createdUtc": { "$ref": "#/$defs/date_time" },
+        "updatedUtc": { "$ref": "#/$defs/date_time" },
+        "finalizedUtc": { "anyOf": [{ "$ref": "#/$defs/date_time" }, { "type": "null" }] },
+        "archivedUtc": { "anyOf": [{ "$ref": "#/$defs/date_time" }, { "type": "null" }] }
+      }
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "portableId",
+        "sourceLocalId",
+        "documentPortableId",
+        "revisionNumber",
+        "documentType",
+        "documentNumber",
+        "lineItems",
+        "totals",
+        "notes",
+        "terms",
+        "adjustmentPolicy",
+        "sourceEvidence",
+        "engineVersion",
+        "engineSourceCommit",
+        "engineWheelSha256",
+        "createdUtc"
+      ],
+      "properties": {
+        "portableId": { "$ref": "#/$defs/portable_id" },
+        "sourceLocalId": { "type": "string", "minLength": 1 },
+        "documentPortableId": { "$ref": "#/$defs/portable_id" },
+        "revisionNumber": { "type": "integer", "minimum": 1 },
+        "documentType": { "$ref": "#/$defs/document_type" },
+        "documentNumber": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "lineItems": { "type": "array", "items": { "$ref": "#/$defs/json_object" } },
+        "totals": { "$ref": "#/$defs/json_object" },
+        "notes": { "$ref": "#/$defs/json_object" },
+        "terms": { "$ref": "#/$defs/json_object" },
+        "adjustmentPolicy": { "$ref": "#/$defs/json_object" },
+        "sourceEvidence": { "$ref": "#/$defs/json_object" },
+        "engineVersion": { "type": "string", "minLength": 1 },
+        "engineSourceCommit": { "type": "string", "minLength": 1 },
+        "engineWheelSha256": { "type": "string", "minLength": 1 },
+        "createdUtc": { "$ref": "#/$defs/date_time" }
+      }
+    },
+    "customer_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portableId", "sourceLocalId", "revisionPortableId", "documentPortableId", "documentType", "documentNumber", "projection", "createdUtc"],
+      "properties": {
+        "portableId": { "$ref": "#/$defs/portable_id" },
+        "sourceLocalId": { "type": "string", "minLength": 1 },
+        "revisionPortableId": { "$ref": "#/$defs/portable_id" },
+        "documentPortableId": { "$ref": "#/$defs/portable_id" },
+        "documentType": { "$ref": "#/$defs/document_type" },
+        "documentNumber": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "projection": { "$ref": "#/$defs/json_object" },
+        "createdUtc": { "$ref": "#/$defs/date_time" }
+      }
+    },
+    "branding_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portableId", "sourceLocalId", "versionNumber", "status", "businessName", "address", "contact", "logo", "colors", "footerText", "brandingSchemaVersion", "createdUtc", "updatedUtc"],
+      "properties": {
+        "portableId": { "$ref": "#/$defs/portable_id" },
+        "sourceLocalId": { "type": "string", "minLength": 1 },
+        "versionNumber": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["active", "archived"] },
+        "businessName": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "address": { "$ref": "#/$defs/json_object" },
+        "contact": { "$ref": "#/$defs/json_object" },
+        "logo": { "$ref": "#/$defs/json_object" },
+        "colors": { "$ref": "#/$defs/json_object" },
+        "footerText": { "type": "string", "maxLength": 500 },
+        "brandingSchemaVersion": { "type": "integer", "minimum": 1 },
+        "createdUtc": { "$ref": "#/$defs/date_time" },
+        "updatedUtc": { "$ref": "#/$defs/date_time" }
+      }
+    },
+    "template": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portableId", "sourceLocalId", "documentType", "templateName", "versionNumber", "status", "parentTemplatePortableId", "layout", "defaultTerms", "templateSchemaVersion", "createdUtc", "updatedUtc"],
+      "properties": {
+        "portableId": { "$ref": "#/$defs/portable_id" },
+        "sourceLocalId": { "type": "string", "minLength": 1 },
+        "documentType": { "$ref": "#/$defs/document_type" },
+        "templateName": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "versionNumber": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["active", "archived"] },
+        "parentTemplatePortableId": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "layout": { "$ref": "#/$defs/json_object" },
+        "defaultTerms": { "$ref": "#/$defs/json_object" },
+        "templateSchemaVersion": { "type": "integer", "minimum": 1 },
+        "createdUtc": { "$ref": "#/$defs/date_time" },
+        "updatedUtc": { "$ref": "#/$defs/date_time" }
+      }
+    },
+    "pdf_output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portableId", "sourceLocalId", "documentPortableId", "revisionPortableId", "documentType", "documentNumber", "templatePortableId", "templateVersion", "brandingProfilePortableId", "brandingVersion", "filename", "sha256", "metadata", "createdUtc"],
+      "properties": {
+        "portableId": { "$ref": "#/$defs/portable_id" },
+        "sourceLocalId": { "type": "string", "minLength": 1 },
+        "documentPortableId": { "$ref": "#/$defs/portable_id" },
+        "revisionPortableId": { "anyOf": [{ "$ref": "#/$defs/portable_id" }, { "type": "null" }] },
+        "documentType": { "$ref": "#/$defs/document_type" },
+        "documentNumber": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "templatePortableId": { "$ref": "#/$defs/portable_id" },
+        "templateVersion": { "type": "integer", "minimum": 1 },
+        "brandingProfilePortableId": { "$ref": "#/$defs/portable_id" },
+        "brandingVersion": { "type": "integer", "minimum": 1 },
+        "filename": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._ -]{0,179}\\.pdf$" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "metadata": { "$ref": "#/$defs/json_object" },
+        "createdUtc": { "$ref": "#/$defs/date_time" }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["portableId", "purpose", "filename", "mimeType", "sizeBytes", "sha256", "dataBase64"],
+      "properties": {
+        "portableId": { "$ref": "#/$defs/portable_id" },
+        "purpose": { "enum": ["brandingLogo"] },
+        "filename": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._ -]{0,159}$" },
+        "mimeType": { "enum": ["image/png", "image/jpeg", "image/webp", "image/svg+xml"] },
+        "sizeBytes": { "type": "integer", "minimum": 1, "maximum": 131072 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "dataBase64": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
